@@ -1,5 +1,5 @@
 ARG  NOTEBOOK_VERSION
-FROM ghcr.io/comp-dev-cms-ita/notebook:${NOTEBOOK_VERSION}-base
+FROM ghcr.io/comp-dev-cms-ita/jupyterlab:${NOTEBOOK_VERSION}-base
 USER root
 
 # Dask and jupyterhub
