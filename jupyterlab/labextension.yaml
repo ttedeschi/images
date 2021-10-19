@@ -1,10 +1,28 @@
 labextension:
   factories:
-    - name: "HTCondor"
+    - name: "HTCondor (random site)"
       module: "dask_remote_jobqueue"
       class: "RemoteHTCondor"
       args: []
       kwargs: {}
+    - name: "HTCondor-PG"
+      module: "dask_remote_jobqueue"
+      class: "RemoteHTCondor"
+      args: []
+      kwargs:
+        - sitename: Perugia
+    - name: "HTCondor-CNAF-DODAS"
+      module: "dask_remote_jobqueue"
+      class: "RemoteHTCondor"
+      args: []
+      kwargs:
+        - sitename: cnaf-dodas
+    - name: "HTCondor-CNAF-k8s"
+      module: "dask_remote_jobqueue"
+      class: "RemoteHTCondor"
+      args: []
+      kwargs:
+        - sitename: cnaf-k8s
     - name: "Local"
       module: "dask.distributed"
       class: "LocalCluster"
