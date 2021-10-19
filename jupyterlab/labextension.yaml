@@ -10,19 +10,19 @@ labextension:
       class: "RemoteHTCondor"
       args: []
       kwargs:
-        - sitename: Perugia
+        sitename: Perugia
     - name: "HTCondor-CNAF-DODAS"
       module: "dask_remote_jobqueue"
       class: "RemoteHTCondor"
       args: []
       kwargs:
-        - sitename: cnaf-dodas
+        sitename: cnaf-dodas
     - name: "HTCondor-CNAF-k8s"
       module: "dask_remote_jobqueue"
       class: "RemoteHTCondor"
       args: []
       kwargs:
-        - sitename: cnaf-k8s
+        sitename: cnaf-k8s
     - name: "Local"
       module: "dask.distributed"
       class: "LocalCluster"
