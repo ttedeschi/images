@@ -28,7 +28,7 @@ RUN npm install -g typescript yarn
 
 # Install DASK labextension
 WORKDIR /usr/local/share/comp-dev-cms-ita
-RUN git clone --branch af_plugin https://github.com/comp-dev-cms-ita/dask-labextension.git
+RUN git clone https://github.com/comp-dev-cms-ita/dask-labextension.git
 
 WORKDIR /usr/local/share/comp-dev-cms-ita/dask-labextension
 COPY labextension.yaml /usr/local/share/comp-dev-cms-ita/dask-labextension/dask_labextension/
@@ -38,7 +38,7 @@ RUN jlpm build && pip install .
 
 WORKDIR /usr/local/share/comp-dev-cms-ita
 
-RUN git clone --branch submit_as_user https://github.com/comp-dev-cms-ita/dask-remote-jobqueue
+RUN git clone https://github.com/comp-dev-cms-ita/dask-remote-jobqueue
 # WORKDIR /usr/local/share/comp-dev-cms-ita/dask-remote-jobqueue
 # RUN python3 setup.py install
 # WORKDIR /usr/local/share/comp-dev-cms-ita
