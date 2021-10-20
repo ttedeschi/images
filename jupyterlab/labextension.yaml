@@ -5,6 +5,12 @@ labextension:
       class: "RemoteHTCondor"
       args: []
       kwargs: {}
+    - name: "HTCondor-T2_LNL_PD_CloudVeneto"
+      module: "dask_remote_jobqueue"
+      class: "RemoteHTCondor"
+      args: []
+      kwargs:
+        sitename: T2_LNL_PD_CloudVeneto
     - name: "HTCondor-PG"
       module: "dask_remote_jobqueue"
       class: "RemoteHTCondor"
