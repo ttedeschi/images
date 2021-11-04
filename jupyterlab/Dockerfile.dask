@@ -27,7 +27,7 @@ RUN apt update -y \
     && apt clean -y \
     && git clone https://github.com/rucio/jupyterlab-extension \
     && cd jupyterlab-extension \
-    && sed -i -e 's/\r$/\n/' /rucio-jupyterlab/docker/configure.sh \
+    && sed -i -e 's/\r$/\n/' docker/configure.sh \
     && pip install -e . \
     && jupyter serverextension enable --py rucio_jupyterlab --sys-prefix \
     && jupyter labextension link . --dev-build=False \
