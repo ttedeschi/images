@@ -5,8 +5,9 @@ USER root
 # Dask and jupyterhub
 RUN python3 -m pip install --upgrade pip
 RUN python3 -m pip install --upgrade setuptools
-RUN python3 -m pip install dask \
-    dask_jobqueue \
+RUN python3 -m pip install \
+    "dask[complete]==2021.11.1" \
+    dask-jobqueue==0.7.3 \
     click==7.1.2 \
     numpy \
     bokeh \
@@ -16,6 +17,7 @@ RUN python3 -m pip install dask \
     notebook \
     jupyter-server-proxy \
     ipywidgets
+
 RUN python3 -m pip install "dask[dataframe]"
 
 RUN npm install npm@latest -g
