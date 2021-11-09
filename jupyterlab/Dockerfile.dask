@@ -35,29 +35,29 @@ RUN apt update -y \
 
 # Install DASK labextension
 WORKDIR /usr/local/share/comp-dev-cms-ita
-RUN git clone https://github.com/comp-dev-cms-ita/dask-labextension.git
+RUN git clone --branch v0.0.1 https://github.com/comp-dev-cms-ita/dask-labextension.git
+COPY labextension.yaml /usr/local/share/comp-dev-cms-ita/dask-labextension/dask_labextension/
 
 WORKDIR /usr/local/share/comp-dev-cms-ita/dask-labextension
-COPY labextension.yaml /usr/local/share/comp-dev-cms-ita/dask-labextension/dask_labextension/
-COPY labextension.yaml /usr/local/share/comp-dev-cms-ita/dask-labextension/
 RUN jlpm
 RUN jlpm build \
-    && pip install . \
+    && pip install . --use-feature=in-tree-build \
     && npm cache clean --force
 
 WORKDIR /usr/local/share/comp-dev-cms-ita
 
 # Install dask remote jobqueue
-RUN git clone https://github.com/comp-dev-cms-ita/dask-remote-jobqueue
+RUN git clone --branch v0.4.23 https://github.com/comp-dev-cms-ita/dask-remote-jobqueue
 # WORKDIR /usr/local/share/comp-dev-cms-ita/dask-remote-jobqueue
 # RUN python3 setup.py install
 # WORKDIR /usr/local/share/comp-dev-cms-ita
-RUN cd /usr/local/share/comp-dev-cms-ita/dask-remote-jobqueue && python3 setup.py install
-
+RUN cd /usr/local/share/comp-dev-cms-ita/dask-remote-jobqueue \
+    && pip install . --use-feature=in-tree-build
 
 RUN mkdir -p /root/.ipython
 
 COPY ./jupyterhub-singleuser.sh /usr/local/bin/jupyterhub-singleuser.sh
 COPY kernel.json /opt/conda/share/jupyter/kernels/python3/kernel.json
 RUN chmod +x /usr/local/bin/jupyterhub-singleuser.sh
+
 WORKDIR /opt/workspace
