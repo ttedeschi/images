@@ -24,14 +24,16 @@ RUN yum -y update \
     libXft-devel \
     libXpm-devel \
     make \
-    oidc-agent \
     openssl-devel \
     python \
     readline-devel \
     sqlite-devel \
     xz-devel \
     yad \
-    zlib-devel \
+    zlib-devel
+
+# --skip-broken to pass libmicrohttpd requirement already installed
+RUN yum -y install --skip-broken oidc-agent \
     && yum clean all \
     && rm -rf /var/cache/yum
 
