@@ -12,11 +12,11 @@ RUN python3 -m pip install \
     numpy \
     bokeh \
     ipython \
-    jupyterhub \
-    jupyterlab \
-    notebook \
+    jupyterhub==1.5.0 \
+    jupyterlab==3.2.2 \
+    notebook==6.4.5 \
     jupyter-server-proxy \
-    ipywidgets
+    ipywidgets==7.6.5
 
 RUN python3 -m pip install "dask[dataframe]"
 
