@@ -1,7 +1,37 @@
 FROM htcondor/execute:8.9.9-el7
 
+RUN cd /etc/yum.repos.d \
+    && wget https://repo.data.kit.edu/data-kit-edu-centos8.repo
+
 RUN yum -y update \
-    && yum -y install git gcc openssl-devel bzip2-devel libffi-devel zlib-devel xz-devel \
+    && yum -y install \
+    binutils \
+    bzip2-devel \
+    cmake3 \
+    gcc \
+    gcc-c++ \
+    gdbm-devel \
+    git \
+    jq \
+    libffi-devel \
+    libmicrohttpd \
+    libseccomp \
+    libsecret \
+    libsodium \
+    libuuid-devel \
+    libX11-devel \
+    libXext-devel \
+    libXft-devel \
+    libXpm-devel \
+    make \
+    oidc-agent \
+    openssl-devel \
+    python \
+    readline-devel \
+    sqlite-devel \
+    xz-devel \
+    yad \
+    zlib-devel \
     && yum clean all \
     && rm -rf /var/cache/yum
 
@@ -17,7 +47,8 @@ RUN cd /usr/src \
 RUN python3 -m pip install -U pip setuptools wheel
 
 # centos base packages
-RUN pip3 install chardet==3.0.4 \
+RUN pip3 install \
+    chardet==3.0.4 \
     htcondor==8.9.9 \
     idna==2.7 \
     PySocks==1.6.8 \
@@ -29,11 +60,11 @@ RUN pip3 install chardet==3.0.4 \
 RUN pip3 install \
     click==7.1.2 \
     ipython \
+    ipywidgets==7.6.5 \
+    jupyter-server-proxy==3.1.0 \
     jupyterhub==1.5.0 \
     jupyterlab==3.2.2 \
-    notebook==6.4.5 \
-    jupyter-server-proxy==3.1.0 \
-    ipywidgets==7.6.5
+    notebook==6.4.5
 
 # Dask
 RUN cd /tmp \
@@ -48,20 +79,6 @@ RUN cd /tmp \
     && pip3 install \
     dask-jobqueue==0.7.3 \
     dask-remote-jobqueue==0.4.21
-
-RUN yum update -y \
-    && yum install -y jq \
-    yad \
-    libmicrohttpd \
-    libseccomp \
-    libsecret \
-    libsodium \
-    git make cmake3 gcc-c++ gcc binutils libX11-devel libXpm-devel libXft-devel libXext-devel python openssl-devel \
-    && yum clean all \
-    && rm -rf /var/cache/yum
-
-RUN wget https://github.com/indigo-dc/oidc-agent/releases/download/v4.1.1/oidc-agent-4.1.1-1.el7.x86_64.rpm \
-    && rpm -i oidc-agent-4.1.1-1.el7.x86_64.rpm
 
 # RUN pip3 install jupyter-packaging
 # RUN git clone --branch custom_clusters https://github.com/DODAS-TS/dask-labextension.git \
