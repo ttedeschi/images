@@ -37,7 +37,7 @@ RUN apt update -y \
 
 # Install DASK labextension
 WORKDIR /usr/local/share/comp-dev-cms-ita
-RUN git clone --branch v0.0.1 https://github.com/comp-dev-cms-ita/dask-labextension.git
+RUN git clone --branch v0.0.2 https://github.com/comp-dev-cms-ita/dask-labextension.git
 COPY labextension.yaml /usr/local/share/comp-dev-cms-ita/dask-labextension/dask_labextension/
 
 WORKDIR /usr/local/share/comp-dev-cms-ita/dask-labextension
