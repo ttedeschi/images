@@ -49,7 +49,7 @@ RUN jlpm build \
 WORKDIR /usr/local/share/comp-dev-cms-ita
 
 # Install dask remote jobqueue
-RUN git clone --branch v0.4.23 https://github.com/comp-dev-cms-ita/dask-remote-jobqueue
+RUN git clone --branch v0.4.24 https://github.com/comp-dev-cms-ita/dask-remote-jobqueue
 # WORKDIR /usr/local/share/comp-dev-cms-ita/dask-remote-jobqueue
 # RUN python3 setup.py install
 # WORKDIR /usr/local/share/comp-dev-cms-ita
