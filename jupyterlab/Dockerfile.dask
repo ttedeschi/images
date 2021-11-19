@@ -27,6 +27,7 @@ RUN npm install -g typescript yarn
 RUN apt update -y \
     && apt install -y voms-clients-java \
     && apt clean -y \
+    && cd /usr/local/ \
     && git clone https://github.com/rucio/jupyterlab-extension \
     && cd jupyterlab-extension \
     && sed -i -e 's/\r$/\n/' docker/configure.sh \
