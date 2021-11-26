@@ -1,0 +1,52 @@
+name: dask-images check
+
+on:
+  push:
+    paths:
+      - "jupyterhub/**"
+      - "jupyterlab/**"
+      - "htcondor/execute/dask/**"
+  pull_request:
+    paths:
+      - "jupyterhub/**"
+      - "jupyterlab/**"
+      - "htcondor/execute/dask/**"
+
+jobs:
+  dockerlint:
+    strategy:
+      matrix:
+        dockerfile:
+          - jupyterlab/Dockerfile.base
+          - jupyterlab/Dockerfile.dask
+          - htcondor/execute/dask/Dockerfile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@master
+        with:
+          dockerfile: ${{ matrix.dockerfile }}
+          failure-threshold: error
+
+  shellcheck-jupyterlab:
+    name: Shellcheck-jupyterlab
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "jupyterlab/"
+          severity: error
+
+  shellcheck-executer:
+    name: Shellcheck-executer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: "htcondor/execute/dask/"
+          severity: error

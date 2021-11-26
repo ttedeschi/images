@@ -1,5 +1,9 @@
 FROM jupyter/scipy-notebook:ubuntu-20.04
 
+ENV TINI_VERSION v0.19.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /bin/tini
+RUN chmod +x /bin/tini
+
 ARG JUPYTER_ROOT=/opt/workspace
 
 USER root
@@ -7,15 +11,15 @@ ENV HOME /root
 
 RUN mkdir -p /root/.init
 
-RUN conda install jupyterhub==1.3.0
+RUN conda install jupyterhub==1.5.0
 
 COPY ./jupyterhub-singleuser /usr/local/bin/jupyterhub-singleuser
 COPY ./spawn.sh /root/.init/spawn.sh
 
 RUN chmod +x /usr/local/bin/jupyterhub-singleuser && chmod +x /root/.init/spawn.sh
 
-RUN   apt-get update \
-    && apt-get install -y  gnupg2 software-properties-common
+RUN apt-get update \
+    && apt-get install -y gnupg2 software-properties-common
 
 #RUN apt-key adv --keyserver hkp://pgp.surfnet.nl --recv-keys ACDFB08FDC962044D87FF00B512839863D487A87 \
 #    && add-apt-repository "deb http://repo.data.kit.edu/ubuntu/bionic ./" 
@@ -46,7 +50,7 @@ RUN apt-get update && apt-get install -y \
     libqrencode-dev \
     fakeroot
 
- 
+
 RUN cd /opt/ && git clone https://github.com/indigo-dc/oidc-agent \
     && cd oidc-agent \
     && make \
@@ -66,8 +70,9 @@ RUN apt-get install -y curl
 RUN curl -fsSL https://research.cs.wisc.edu/htcondor/repo/keys/HTCondor-Release.gpg.key | apt-key add - \
     && echo -e "deb [arch=amd64] https://research.cs.wisc.edu/htcondor/repo/ubuntu/8.9 focal main\ndeb-src https://research.cs.wisc.edu/htcondor/repo/ubuntu/8.9 focal main" > /etc/apt/sources.list.d/htcondor.list
 
-RUN apt update && apt-get install -y htcondor
+RUN apt-get update && apt-get install -y htcondor
 
 COPY ./condor_config /etc/condor/condor_config
 COPY ./htc-demo  /opt/workspace/htc-example
+
 WORKDIR /opt/workspace

@@ -5,59 +5,62 @@ USER root
 # Dask and jupyterhub
 RUN python3 -m pip install --upgrade pip
 RUN python3 -m pip install --upgrade setuptools
-RUN python3 -m pip install dask \
-    dask_jobqueue \
+RUN python3 -m pip install \
+    "dask[complete]==2021.11.1" \
+    dask-jobqueue==0.7.3 \
     click==7.1.2 \
     numpy \
     bokeh \
     ipython \
-    jupyterhub \
-    jupyterlab \
-    notebook \
+    jupyterhub==1.5.0 \
+    jupyterlab==3.2.2 \
+    notebook==6.4.5 \
     jupyter-server-proxy \
-    ipywidgets
-RUN python3 -m pip install "dask[dataframe]"
+    ipywidgets==7.6.5
+
+RUN python3 -m pip install "dask[dataframe]==2021.11.1"
 
 RUN npm install npm@latest -g
 RUN npm install -g typescript yarn
 
 # Install Rucio plugin
-RUN apt update -y \
-    && apt install -y voms-clients-java \
-    && apt clean -y \
+RUN apt-get update -y \
+    && apt-get install -y voms-clients-java \
+    && apt-get clean -y \
+    && cd /usr/local/ \
     && git clone https://github.com/rucio/jupyterlab-extension \
     && cd jupyterlab-extension \
     && sed -i -e 's/\r$/\n/' docker/configure.sh \
-    && pip install -e . \
+    && python3 -m pip install -e . \
     && jupyter serverextension enable --py rucio_jupyterlab --sys-prefix \
     && jupyter labextension link . --dev-build=False \
     && jupyter lab clean -y 
 
 # Install DASK labextension
 WORKDIR /usr/local/share/comp-dev-cms-ita
-RUN git clone https://github.com/comp-dev-cms-ita/dask-labextension.git
+RUN git clone --branch v0.0.2 https://github.com/comp-dev-cms-ita/dask-labextension.git
+COPY labextension.yaml /usr/local/share/comp-dev-cms-ita/dask-labextension/dask_labextension/
 
 WORKDIR /usr/local/share/comp-dev-cms-ita/dask-labextension
-COPY labextension.yaml /usr/local/share/comp-dev-cms-ita/dask-labextension/dask_labextension/
-COPY labextension.yaml /usr/local/share/comp-dev-cms-ita/dask-labextension/
 RUN jlpm
 RUN jlpm build \
-    && pip install . \
+    && python3 -m pip install --use-feature=in-tree-build . \
     && npm cache clean --force
 
 WORKDIR /usr/local/share/comp-dev-cms-ita
 
 # Install dask remote jobqueue
-RUN git clone https://github.com/comp-dev-cms-ita/dask-remote-jobqueue
+RUN git clone --branch v0.4.26 https://github.com/comp-dev-cms-ita/dask-remote-jobqueue
 # WORKDIR /usr/local/share/comp-dev-cms-ita/dask-remote-jobqueue
 # RUN python3 setup.py install
 # WORKDIR /usr/local/share/comp-dev-cms-ita
-RUN cd /usr/local/share/comp-dev-cms-ita/dask-remote-jobqueue && python3 setup.py install
-
+RUN cd /usr/local/share/comp-dev-cms-ita/dask-remote-jobqueue \
+    && pip install --use-feature=in-tree-build .
 
 RUN mkdir -p /root/.ipython
 
 COPY ./jupyterhub-singleuser.sh /usr/local/bin/jupyterhub-singleuser.sh
 COPY kernel.json /opt/conda/share/jupyter/kernels/python3/kernel.json
 RUN chmod +x /usr/local/bin/jupyterhub-singleuser.sh
+
 WORKDIR /opt/workspace
