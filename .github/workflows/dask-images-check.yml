@@ -30,7 +30,7 @@ jobs:
           failure-threshold: error
 
   shellcheck-jupyterlab:
-    name: Shellcheck
+    name: Shellcheck-jupyterlab
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -41,7 +41,7 @@ jobs:
           severity: error
 
   shellcheck-executer:
-    name: Shellcheck
+    name: Shellcheck-executer
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
