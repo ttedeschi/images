@@ -1,4 +1,4 @@
-name: jupyterlab-images
+name: dask-images
 
 on:
   push:
