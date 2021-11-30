@@ -5,13 +5,14 @@ ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /bin/
 RUN chmod +x /bin/tini
 
 RUN cd /etc/yum.repos.d \
-    && wget https://repo.data.kit.edu/data-kit-edu-centos8.repo
+    && wget https://repo.data.kit.edu/data-kit-edu-centos7.repo
 
 RUN yum -y update \
     && yum -y install \
     binutils \
     bzip2-devel \
     cmake3 \
+    dnf \
     gcc \
     gcc-c++ \
     gdbm-devel \
@@ -36,8 +37,7 @@ RUN yum -y update \
     yad \
     zlib-devel
 
-# --skip-broken to pass libmicrohttpd requirement already installed
-RUN yum -y install --skip-broken oidc-agent \
+RUN dnf -y install oidc-agent \
     && yum clean all \
     && rm -rf /var/cache/yum
 
