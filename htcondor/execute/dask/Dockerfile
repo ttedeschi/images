@@ -70,7 +70,8 @@ RUN pip3 install \
     jupyter-server-proxy==3.1.0 \
     jupyterhub==1.5.0 \
     jupyterlab==3.2.2 \
-    notebook==6.4.5
+    notebook==6.4.5 \
+    toolz==0.11.1
 
 # Dask
 RUN cd /tmp \
