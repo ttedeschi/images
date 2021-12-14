@@ -43,10 +43,13 @@ RUN git clone --branch v0.0.2 https://github.com/comp-dev-cms-ita/dask-labextens
 COPY labextension.yaml /usr/local/share/comp-dev-cms-ita/dask-labextension/dask_labextension/
 
 WORKDIR /usr/local/share/comp-dev-cms-ita/dask-labextension
-RUN jlpm
-RUN jlpm build \
-    && python3 -m pip install --use-feature=in-tree-build . \
-    && npm cache clean --force
+RUN jlpm \
+    && jlpm build \
+    && npm cache clean
+RUN python3 -m pip install --use-feature=in-tree-build .
+
+# Build jupyter lab stuff in release mode
+# RUN /bin/bash -c "jupyter lab build --dev-build=False --minimize=True"
 
 WORKDIR /usr/local/share/comp-dev-cms-ita
 
