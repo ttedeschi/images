@@ -60,7 +60,7 @@ RUN git clone --branch v0.5.4 https://github.com/comp-dev-cms-ita/dask-remote-jo
 # RUN python3 setup.py install
 # WORKDIR /usr/local/share/comp-dev-cms-ita
 RUN cd /usr/local/share/comp-dev-cms-ita/dask-remote-jobqueue \
-    && pip install --use-feature=in-tree-build .
+    && python3 -m pip install --use-feature=in-tree-build .
 
 RUN mkdir -p /root/.ipython
 
