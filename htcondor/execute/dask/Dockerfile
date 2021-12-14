@@ -73,19 +73,19 @@ RUN pip3 install \
     notebook==6.4.5 \
     toolz==0.11.1
 
-# Dask
-RUN cd /tmp \
-    && git clone --branch 2021.11.1 https://github.com/dask/distributed.git \
-    && git clone --branch 2021.11.1 https://github.com/dask/dask.git \
-    && cd /tmp/dask \
-    && python3 -m pip install . --use-feature=in-tree-build \
-    && cd /tmp/distributed \
-    && python3 -m pip install . --use-feature=in-tree-build \
-    && cd /tmp/dask \
-    && python3 -m pip install ".[complete]" --use-feature=in-tree-build \
-    && pip3 install \
-    dask-jobqueue==0.7.3 \
-    dask-remote-jobqueue==0.4.21
+# Dask -> Commented because is on CVMFS
+# RUN cd /tmp \
+#     && git clone --branch 2021.11.1 https://github.com/dask/distributed.git \
+#     && git clone --branch 2021.11.1 https://github.com/dask/dask.git \
+#     && cd /tmp/dask \
+#     && python3 -m pip install . --use-feature=in-tree-build \
+#     && cd /tmp/distributed \
+#     && python3 -m pip install . --use-feature=in-tree-build \
+#     && cd /tmp/dask \
+#     && python3 -m pip install ".[complete]" --use-feature=in-tree-build \
+#     && pip3 install \
+#     dask-jobqueue==0.7.3 \
+#     dask-remote-jobqueue==0.4.21
 
 # RUN pip3 install jupyter-packaging
 # RUN git clone --branch custom_clusters https://github.com/DODAS-TS/dask-labextension.git \
