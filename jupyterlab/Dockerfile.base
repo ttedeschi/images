@@ -11,7 +11,9 @@ RUN chmod +x /bin/tini
 
 RUN mkdir -p /root/.init
 
-RUN conda install jupyterhub==1.5.0
+RUN conda update conda
+RUN conda install -y jupyterhub==1.5.0 nodejs==16.13.0
+RUN npm install npm@8.3.0 -g
 
 COPY ./jupyterhub-singleuser /usr/local/bin/jupyterhub-singleuser
 COPY ./spawn.sh /root/.init/spawn.sh

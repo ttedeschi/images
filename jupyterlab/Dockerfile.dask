@@ -21,7 +21,6 @@ RUN python3 -m pip install \
 
 RUN python3 -m pip install "dask[dataframe]==2021.11.1"
 
-RUN npm install npm@7.24.2 -g
 RUN npm install -g typescript yarn
 
 # Install Rucio plugin
@@ -45,7 +44,7 @@ COPY labextension.yaml /usr/local/share/comp-dev-cms-ita/dask-labextension/dask_
 WORKDIR /usr/local/share/comp-dev-cms-ita/dask-labextension
 RUN jlpm \
     && jlpm build \
-    && npm cache clean
+    && npm cache clean --force
 RUN python3 -m pip install --use-feature=in-tree-build .
 
 # Build jupyter lab stuff in release mode
