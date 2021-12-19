@@ -1,0 +1,1 @@
+*/10 * * * * eval `oidc-keychain` && echo `oidc-token cms-wlcg -t 3600 -s "openid profile wlcg wlcg.groups"` > /root/.token

@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+  telegraf:
+    image: dodasts/telegraf-htc
+    restart: always
+    entrypoint:
+      - bash
+      - -c
+      - "sleep infinity"
+    network_mode: "host"
+    volumes:
+    - type: bind
+      source: ./secret
+      target: /etc/secret
+    - type: bind
+      source: ./ca.crt
+      target: /etc/ca.crt
+    - type: bind
+      source: ./test.py
+      target: /bin/test.py
+    #healthcheck:
+    #  test: ["CMD", "/bin/bash", "-c", "pgrep xrootd"]
+    #  interval: 30s
+    #  timeout: 10s
+    #  retries: 3
+    #  start_period: 30s
+    env_file:
+    - .env
