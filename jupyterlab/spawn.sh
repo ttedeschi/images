@@ -2,7 +2,7 @@
 
 # Configure oidc-agent for user token management
 # Ref: https://indigo-dc.gitbook.io/oidc-agent/user/oidc-keychain
-echo -e "eval \$(oidc-keychain)" >>~/.bashrc
+echo -e "\neval \$(oidc-keychain)" >>~/.bashrc
 
 eval "$(oidc-keychain)"
 
