@@ -1,12 +1,15 @@
 #!/bin/bash
 
 # Configure oidc-agent for user token management
+echo -e "\n" >>~/.bashrc
 echo "eval \`oidc-keychain\`" >>~/.bashrc
-eval $(oidc-keychain)
-oidc-gen dodas --issuer $IAM_SERVER \
-    --client-id $IAM_CLIENT_ID \
-    --client-secret $IAM_CLIENT_SECRET \
-    --rt $REFRESH_TOKEN \
+
+source ~/.bashrc
+
+oidc-gen dodas --issuer "$IAM_SERVER" \
+    --client-id "$IAM_CLIENT_ID" \
+    --client-secret "$IAM_CLIENT_SECRET" \
+    --rt "$REFRESH_TOKEN" \
     --confirm-yes \
     --scope "openid profile email wlcg wlcg.groups" \
     --redirect-uri http://localhost:8843 \
