@@ -10,4 +10,4 @@ export PYTHONPATH=/opt/conda/lib/python3.9/site-packages/$PYTHONPATH
 export JUPYTER_PATH=/opt/conda/etc/jupyter
 export JUPYTER_CONFIG_DIR=/opt/conda/etc/jupyter
 
-python /usr/local/bin/jupyterhub-singleuser "$@"
+/usr/bin/tini -s /opt/conda/bin/python -- /usr/local/bin/jupyterhub-singleuser "$@"
