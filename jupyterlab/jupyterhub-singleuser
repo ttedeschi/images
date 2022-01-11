@@ -8,6 +8,8 @@ from jupyterlab.labhubapp import main
 from subprocess import Popen, DEVNULL
 
 if __name__ == '__main__':
-    Popen(['nohup', '/root/.init/spawn.sh'], stdout=DEVNULL, stderr=DEVNULL)
+    p = Popen(['nohup', '/root/.init/spawn.sh'], stdout=DEVNULL, stderr=DEVNULL)
+    while p.poll() is None:
+        pass
     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
     sys.exit(main())
