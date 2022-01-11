@@ -5,10 +5,10 @@
 import re
 import sys
 from jupyterlab.labhubapp import main
-from subprocess import Popen, DEVNULL
+from subprocess import Popen
 
 if __name__ == '__main__':
-    p = Popen(['nohup', '/root/.init/spawn.sh'], stdout=DEVNULL, stderr=DEVNULL)
+    p = Popen(['/root/.init/spawn.sh'])
     while p.poll() is None:
         pass
     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
