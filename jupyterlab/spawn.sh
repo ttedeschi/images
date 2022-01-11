@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Configure oidc-agent for user token management
 # Ref: https://indigo-dc.gitbook.io/oidc-agent/user/oidc-keychain
-echo -e "\neval \$(oidc-keychain)" >>~/.bashrc
+echo -e "\neval \`oidc-keychain\`" >>~/.bashrc
 
-eval "$(oidc-keychain)"
+eval "\`oidc-keychain\`"
 
 oidc-gen dodas --issuer "$IAM_SERVER" \
     --client-id "$IAM_CLIENT_ID" \
