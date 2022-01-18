@@ -37,7 +37,7 @@ RUN yum -y update \
     yad \
     zlib-devel
 
-RUN dnf -y install oidc-agent \
+RUN dnf -y install oidc-agent-4.2.4 \
     && yum clean all \
     && rm -rf /var/cache/yum
 
