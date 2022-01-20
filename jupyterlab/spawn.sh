@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
+export OIDC_CONFIG_DIR=$HOME/.oidc-agent
+
 # Configure oidc-agent for user token management
 # Ref: https://indigo-dc.gitbook.io/oidc-agent/user/oidc-keychain
+echo -e "\nexport OIDC_CONFIG_DIR=$HOME/.oidc-agent" >>.bashrc
 echo -e "\neval \`oidc-keychain\`" >>~/.bashrc
 
 eval $(oidc-keychain)
