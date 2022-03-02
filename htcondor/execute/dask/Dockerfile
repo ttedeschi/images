@@ -85,7 +85,11 @@ RUN pip3 install \
 #     && python3 -m pip install ".[complete]" --use-feature=in-tree-build \
 #     && pip3 install \
 #     dask-jobqueue==0.7.3 \
-#     dask-remote-jobqueue==0.4.21
+#     dask-remote-jobqueue==0.4.21 \
+#     msgpack==1.0.2 \
+#     numpy==1.20.3 \
+#     pandas==1.3.3 \
+#     toolz==0.11.1
 
 # RUN pip3 install jupyter-packaging
 # RUN git clone --branch custom_clusters https://github.com/DODAS-TS/dask-labextension.git \
