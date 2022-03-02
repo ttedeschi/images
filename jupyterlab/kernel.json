@@ -1,12 +1,11 @@
-
 {
     "argv": [
-   "bash", "-c",
-   "source /cvmfs/cms.dodas.infn.it/miniconda3/etc/profile.d/conda.sh; conda activate cms-dodas; source /cvmfs/cms.dodas.infn.it/miniconda3/envs/cms-dodas/bin/thisroot.sh;  python3 -m ipykernel_launcher -f {connection_file}"
+        "bash", "-c",
+        "source /cvmfs/cms.dodas.infn.it/miniconda3/etc/profile.d/conda.sh; conda activate cms-dodas; source /cvmfs/cms.dodas.infn.it/root-ubuntu/bin/thisroot.sh; python3 -m ipykernel_launcher -f {connection_file}"
     ],
     "display_name": "Python 3 (ipykernel)",
     "language": "python",
     "metadata": {
-     "debugger": true
+        "debugger": true
     }
 }
