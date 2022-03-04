@@ -20,8 +20,9 @@ RUN apt-get update && apt-get install -y \
     libseccomp-dev \
     libmicrohttpd-dev \
     libsecret-1-dev \
-    python3 \
-    python3-pip \ 
+    python3.8 \
+    python3.8-dev \ 
+    python3-distutils \
     wget \
     fuse \
     git \
@@ -39,19 +40,10 @@ RUN cd /opt/ && git clone https://github.com/indigo-dc/oidc-agent \
     && make install_lib \
     && make install
 
-# Overwrite python3 with python3.8 (Dask requirement)
-RUN cd /usr/src \
-    && wget https://www.python.org/ftp/python/3.8.8/Python-3.8.8.tgz \
-    && tar xzf Python-3.8.8.tgz \
-    && rm Python-3.8.8.tgz \
-    && cd Python-3.8.8 \
-    && ./configure --enable-optimizations \
-    && make install
-
-RUN python3 -m pip install -U pip setuptools wheel
+RUN python3.8 -m pip install -U pip setuptools wheel
 
 # centos base packages
-RUN pip3 install \
+RUN python3.8 -m pip install \
     chardet==3.0.4 \
     htcondor==8.9.9 \
     idna==2.7 \
@@ -61,7 +53,7 @@ RUN pip3 install \
     urllib3==1.25.6
 
 # Base dependencies
-RUN pip3 install \
+RUN python3.8 -m pip install \
     click==7.1.2 \
     ipython \
     ipywidgets==7.6.5 \
@@ -71,16 +63,9 @@ RUN pip3 install \
     notebook==6.4.5 \
     toolz==0.11.1
 
-RUN cd /tmp \
-    && git clone --branch 2021.11.1 https://github.com/dask/distributed.git \
-    && git clone --branch 2021.11.1 https://github.com/dask/dask.git \
-    && cd /tmp/dask \
-    && python3 -m pip install . --use-feature=in-tree-build \
-    && cd /tmp/distributed \
-    && python3 -m pip install . --use-feature=in-tree-build \
-    && cd /tmp/dask \
-    && python3 -m pip install ".[complete]" --use-feature=in-tree-build \
-    && pip3 install \
+RUN python3.8 -m pip install \
+    "dask[complete]==2021.11.1" \
+    bokeh \
     dask-jobqueue==0.7.3 \
     dask-remote-jobqueue==0.4.21 \
     msgpack==1.0.2 \
