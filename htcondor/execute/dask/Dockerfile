@@ -20,8 +20,9 @@ RUN apt-get update && apt-get install -y \
     libseccomp-dev \
     libmicrohttpd-dev \
     libsecret-1-dev \
-    python3.8 \
-    python3.8-dev \ 
+    python3 \
+    python3-dev \ 
+    python3-pip \ 
     python3-distutils \
     wget \
     fuse \
@@ -34,20 +35,16 @@ RUN apt-get update && apt-get install -y \
     libqrencode-dev \
     fakeroot
 
-RUN wget https://bootstrap.pypa.io/get-pip.py \
-    && python3.8 get-pip.py \
-    && rm get-pip.py
-
 RUN cd /opt/ && git clone https://github.com/indigo-dc/oidc-agent \
     && cd oidc-agent \
     && make \
     && make install_lib \
     && make install
 
-RUN python3.8 -m pip install -U pip setuptools wheel
+RUN python3 -m pip install -U pip setuptools wheel
 
 # centos base packages
-RUN python3.8 -m pip install \
+RUN python3 -m pip install \
     chardet==3.0.4 \
     htcondor==8.9.9 \
     idna==2.7 \
@@ -57,7 +54,7 @@ RUN python3.8 -m pip install \
     urllib3==1.25.6
 
 # Base dependencies
-RUN python3.8 -m pip install \
+RUN python3 -m pip install \
     click==7.1.2 \
     ipython \
     ipywidgets==7.6.5 \
@@ -67,14 +64,15 @@ RUN python3.8 -m pip install \
     notebook==6.4.5 \
     toolz==0.11.1
 
-RUN python3.8 -m pip install \
-    "dask[complete]==2021.11.1" \
+RUN python3 -m pip install \
+    asyncssh==2.9.0 \
+    "dask[complete]==2021.3.0" \
     bokeh \
     dask-jobqueue==0.7.3 \
     dask-remote-jobqueue==0.4.21 \
     msgpack==1.0.2 \
-    numpy==1.20.3 \
-    pandas==1.3.3 \
+    numpy==1.19.5 \
+    pandas==1.1.5 \
     toolz==0.11.1
 
 # RUN pip3 install jupyter-packaging
