@@ -23,11 +23,16 @@ while true; do
     sleep 600
 done &
 
-if [[ -f "/cvmfs/cms.dodas.infn.it/miniconda3/etc/profile.d/conda.sh" ]]; then
-    source /cvmfs/cms.dodas.infn.it/miniconda3/etc/profile.d/conda.sh
-    conda activate af
-    source /cvmfs/cms.dodas.infn.it/miniconda3/envs/af/bin/thisroot.sh
-    #export LD_LIBRARY_PATH=/cvmfs/cms.dodas.infn.it/miniconda3/envs/cms-dodas/lib:$LD_LIBRARY_PATH
-    export JUPYTER_PATH=/opt/conda/etc/jupyter
-    export JUPYTER_CONFIG_DIR=/opt/conda/etc/jupyter
-fi
+# if [[ -f "/cvmfs/cms.dodas.infn.it/miniconda3/etc/profile.d/conda.sh" ]]; then
+#     source /cvmfs/cms.dodas.infn.it/miniconda3/etc/profile.d/conda.sh
+#     conda activate af
+#     source /cvmfs/cms.dodas.infn.it/miniconda3/envs/af/bin/thisroot.sh
+#     #export LD_LIBRARY_PATH=/cvmfs/cms.dodas.infn.it/miniconda3/envs/cms-dodas/lib:$LD_LIBRARY_PATH
+#     export JUPYTER_PATH=/opt/conda/etc/jupyter
+#     export JUPYTER_CONFIG_DIR=/opt/conda/etc/jupyter
+# fi
+
+export JUPYTER_PATH=/opt/conda/etc/jupyter
+export JUPYTER_CONFIG_DIR=/opt/conda/etc/jupyter
+
+source /cvmfs/sft.cern.ch/lcg/app/releases/ROOT/6.26.00/x86_64-ubuntu20-gcc93-opt/bin/thisroot.sh

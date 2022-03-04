@@ -1,52 +1,50 @@
-FROM htcondor/execute:8.9.9-el7
+FROM htcondor/execute:8.9-ubu18.04
 
 ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /bin/tini
 RUN chmod +x /bin/tini
 
-RUN cd /etc/yum.repos.d \
-    && wget https://repo.data.kit.edu/data-kit-edu-centos7.repo
+RUN apt-get update \
+    && apt-get install -y gnupg2 software-properties-common
 
-RUN yum -y update \
-    && yum -y install \
-    binutils \
-    bzip2-devel \
-    cmake3 \
-    dnf \
-    gcc \
-    gcc-c++ \
-    gdbm-devel \
-    git \
-    jq \
-    libffi-devel \
-    libmicrohttpd \
-    libseccomp \
-    libsecret \
-    libsodium \
-    libuuid-devel \
-    libX11-devel \
-    libXext-devel \
-    libXft-devel \
-    libXpm-devel \
+RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    help2man \
+    check \
+    devscripts \
     make \
-    openssl-devel \
-    python \
-    readline-devel \
-    sqlite-devel \
-    xz-devel \
-    yad \
-    zlib-devel
+    sudo \
+    ca-certificates \
+    libcurl4-openssl-dev \
+    libsodium-dev \
+    libseccomp-dev \
+    libmicrohttpd-dev \
+    libsecret-1-dev \
+    python3 \
+    python3-pip \ 
+    wget \
+    fuse \
+    git \
+    build-essential \
+    debhelper \
+    pkg-config \
+    perl \
+    sed \
+    libqrencode-dev \
+    fakeroot
 
-RUN dnf -y install oidc-agent-4.2.4 \
-    && yum clean all \
-    && rm -rf /var/cache/yum
+RUN cd /opt/ && git clone https://github.com/indigo-dc/oidc-agent \
+    && cd oidc-agent \
+    && make \
+    && make install_lib \
+    && make install
 
-# Overwrite python3 with python3.7 (Dask requirement)
+# Overwrite python3 with python3.8 (Dask requirement)
 RUN cd /usr/src \
-    && wget https://www.python.org/ftp/python/3.7.12/Python-3.7.12.tgz \
-    && tar xzf Python-3.7.12.tgz \
-    && rm Python-3.7.12.tgz \
-    && cd Python-3.7.12 \
+    && wget https://www.python.org/ftp/python/3.8.8/Python-3.8.8.tgz \
+    && tar xzf Python-3.8.8.tgz \
+    && rm Python-3.8.8.tgz \
+    && cd Python-3.8.8 \
     && ./configure --enable-optimizations \
     && make install
 
@@ -73,23 +71,22 @@ RUN pip3 install \
     notebook==6.4.5 \
     toolz==0.11.1
 
-# Dask -> Commented because is on CVMFS
-# RUN cd /tmp \
-#     && git clone --branch 2021.11.1 https://github.com/dask/distributed.git \
-#     && git clone --branch 2021.11.1 https://github.com/dask/dask.git \
-#     && cd /tmp/dask \
-#     && python3 -m pip install . --use-feature=in-tree-build \
-#     && cd /tmp/distributed \
-#     && python3 -m pip install . --use-feature=in-tree-build \
-#     && cd /tmp/dask \
-#     && python3 -m pip install ".[complete]" --use-feature=in-tree-build \
-#     && pip3 install \
-#     dask-jobqueue==0.7.3 \
-#     dask-remote-jobqueue==0.4.21 \
-#     msgpack==1.0.2 \
-#     numpy==1.20.3 \
-#     pandas==1.3.3 \
-#     toolz==0.11.1
+RUN cd /tmp \
+    && git clone --branch 2021.11.1 https://github.com/dask/distributed.git \
+    && git clone --branch 2021.11.1 https://github.com/dask/dask.git \
+    && cd /tmp/dask \
+    && python3 -m pip install . --use-feature=in-tree-build \
+    && cd /tmp/distributed \
+    && python3 -m pip install . --use-feature=in-tree-build \
+    && cd /tmp/dask \
+    && python3 -m pip install ".[complete]" --use-feature=in-tree-build \
+    && pip3 install \
+    dask-jobqueue==0.7.3 \
+    dask-remote-jobqueue==0.4.21 \
+    msgpack==1.0.2 \
+    numpy==1.20.3 \
+    pandas==1.3.3 \
+    toolz==0.11.1
 
 # RUN pip3 install jupyter-packaging
 # RUN git clone --branch custom_clusters https://github.com/DODAS-TS/dask-labextension.git \

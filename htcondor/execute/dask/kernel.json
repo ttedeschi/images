@@ -1,7 +1,7 @@
 {
     "argv": [
         "bash", "-c",
-        "source ~/htc.rc; source /usr/local/share/root6/bin/thisroot.sh; python3 -m ipykernel_launcher -f {connection_file}"
+        "source ~/htc.rc; /cvmfs/sft.cern.ch/lcg/app/releases/ROOT/6.26.00/x86_64-ubuntu18-gcc75-opt/bin/thisroot.sh; python3 -m ipykernel_launcher -f {connection_file}"
     ],
     "display_name": "Python 3",
     "language": "python"
