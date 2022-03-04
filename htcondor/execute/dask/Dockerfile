@@ -34,6 +34,10 @@ RUN apt-get update && apt-get install -y \
     libqrencode-dev \
     fakeroot
 
+RUN wget https://bootstrap.pypa.io/get-pip.py \
+    && python3.8 get-pip.py \
+    && rm get-pip.py
+
 RUN cd /opt/ && git clone https://github.com/indigo-dc/oidc-agent \
     && cd oidc-agent \
     && make \
