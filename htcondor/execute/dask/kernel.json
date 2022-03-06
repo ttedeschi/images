@@ -1,7 +1,7 @@
 {
     "argv": [
         "bash", "-c",
-        "source ~/htc.rc; source /usr/local/share/root6/bin/thisroot.sh; python3 -m ipykernel_launcher -f {connection_file}"
+        "source ~/htc.rc; source /cvmfs/cms.dodas.infn.it/miniconda3/bin/activate; conda activate af-test; source /cvmfs/cms.dodas.infn.it/miniconda3/envs/af-test/bin/thisroot.sh; python3 -m ipykernel_launcher -f {connection_file}"
     ],
     "display_name": "Python 3",
     "language": "python"

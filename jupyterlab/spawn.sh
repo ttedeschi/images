@@ -24,9 +24,9 @@ while true; do
 done &
 
 if [[ -f "/cvmfs/cms.dodas.infn.it/miniconda3/etc/profile.d/conda.sh" ]]; then
-    source /cvmfs/cms.dodas.infn.it/miniconda3/etc/profile.d/conda.sh
-    conda activate af
-    source /cvmfs/cms.dodas.infn.it/miniconda3/envs/af/bin/thisroot.sh
+    source /cvmfs/cms.dodas.infn.it/miniconda3/bin/activate
+    conda activate af-test
+    source /cvmfs/cms.dodas.infn.it/miniconda3/envs/af-test/bin/thisroot.sh
     #export LD_LIBRARY_PATH=/cvmfs/cms.dodas.infn.it/miniconda3/envs/cms-dodas/lib:$LD_LIBRARY_PATH
     export JUPYTER_PATH=/opt/conda/etc/jupyter
     export JUPYTER_CONFIG_DIR=/opt/conda/etc/jupyter
