@@ -1,0 +1,137 @@
+ARG BASE_IMAGE="cern/cc7-base"
+FROM ${BASE_IMAGE}
+
+COPY packages /tmp/
+
+# clean metadata: https://srvfail.com/yum-doesnt-work-in-clean-centos-7-install-exiting-on-user-cancel/
+RUN yum -y clean metadata \
+    &&yum -y update \
+    && yum -y upgrade \
+    && yum -y install epel-release \
+    && xargs yum -y install < /tmp/packages \
+    && yum -y clean all \
+    && localedef -i en_US -f UTF-8 en_US.UTF-8 \
+    && rm -f /tmp/packages \
+    && yum clean all
+
+# Overwrite python3 with python3.9 (Dask requirement)
+RUN cd /usr/src \
+    && wget https://www.python.org/ftp/python/3.9.9/Python-3.9.9.tgz \
+    && tar xzf Python-3.9.9.tgz \
+    && rm Python-3.9.9.tgz \
+    && cd Python-3.9.9 \
+    && ./configure --enable-optimizations \
+    && make install
+
+RUN python3 -m pip install -U pip setuptools wheel
+
+
+WORKDIR /
+
+# Install oidc-agent
+RUN cd /etc/yum.repos.d && wget --progress=bar https://repo.data.kit.edu/data-kit-edu-centos7.repo
+RUN yum install -y oidc-agent && yum clean all
+
+# Install jupyterlab
+RUN python3 -m pip install --no-cache-dir \
+    idna==3.3 \
+    importlib-metadata==3.10.1 \
+    ipympl==0.8.2 \
+    ipywidgets==7.6.5 \
+    jedi-language-server==0.34.8 \
+    jupyterlab-system-monitor==0.8.0 \
+    jupyterlab==3.2.3 \
+    jupyterhub==1.5.0 \
+    ipykernel \
+    nbdime==3.1.1 \
+    notebook==6.4.5 \
+    pycurl==7.44.1 
+
+#FROM dodasts/snj-base-lab-cc7:v1.0.0-snj
+
+RUN yum install -y epel-release
+RUN yum install -y https://research.cs.wisc.edu/htcondor/repo/8.9/htcondor-release-current.el7.noarch.rpm 
+
+RUN sed -i "s/current/8\.9/" /etc/yum.repos.d/htcondor.repo
+
+RUN yum install -y 	condor-8.9.13 
+
+ENV TINI_VERSION v0.19.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /bin/tini
+RUN chmod +x /bin/tini
+
+RUN python3 -m pip install \
+    "dask[complete]==2021.11.1" \
+    bokeh \
+    click==7.1.2 \
+    dask-jobqueue==0.7.3 \
+    ipython \
+    ipywidgets==7.6.5 \
+    jupyter-server-proxy \
+    numpy==1.20.3 \
+    pandas==1.3.3 \
+    toolz==0.11.1
+
+RUN python3 -m pip install "dask[dataframe]==2021.11.1"
+
+RUN yum install -y nodejs npm && npm install -g typescript yarn
+
+## Install Rucio plugin
+#RUN yum install -y voms-clients-java \
+#    && cd /usr/local/ \
+#    && git clone https://github.com/rucio/jupyterlab-extension \
+#    && cd jupyterlab-extension \
+#    && sed -i -e 's/\r$/\n/' docker/configure.sh \
+#    && python3 -m pip install -e . \
+#    && jupyter serverextension enable --py rucio_jupyterlab --sys-prefix \
+#    && jupyter labextension link . --dev-build=False \
+#    && jupyter lab clean -y 
+
+# Install DASK labextension
+WORKDIR /usr/local/share/comp-dev-cms-ita
+RUN git clone --branch v0.0.5 https://github.com/comp-dev-cms-ita/dask-labextension.git
+COPY labextension.yaml /usr/local/share/comp-dev-cms-ita/dask-labextension/dask_labextension/
+
+WORKDIR /usr/local/share/comp-dev-cms-ita/dask-labextension
+RUN jlpm \
+    && jlpm build \
+    && npm cache clean --force
+RUN python3 -m pip install --use-feature=in-tree-build .
+
+# Build jupyter lab stuff in release mode
+# RUN /bin/bash -c "jupyter lab build --dev-build=False --minimize=True"
+
+WORKDIR /usr/local/share/comp-dev-cms-ita
+
+# Install DASK remote jobqueue
+RUN git clone --branch v0.6.0-af-test  https://github.com/comp-dev-cms-ita/dask-remote-jobqueue
+# WORKDIR /usr/local/share/comp-dev-cms-ita/dask-remote-jobqueue
+# RUN python3 setup.py install
+# WORKDIR /usr/local/share/comp-dev-cms-ita
+RUN cd /usr/local/share/comp-dev-cms-ita/dask-remote-jobqueue \
+    && python3 -m pip install -U --use-feature=in-tree-build .
+
+RUN mkdir -p /root/.ipython
+
+
+COPY ./condor_config /etc/condor/condor_config
+COPY ./htc-demo  /opt/workspace/htc-example
+COPY ./jupyterhub-singleuser-cc7.sh /usr/local/bin/jupyterhub-singleuser.sh
+COPY ./jupyterhub-singleuser-cc7 /usr/local/bin/jupyterhub-singleuser
+COPY ./spawn.sh /root/.init/spawn.sh
+RUN chmod +x /usr/local/bin/jupyterhub-singleuser.sh
+RUN chmod +x /usr/local/bin/jupyterhub-singleuser && chmod +x /root/.init/spawn.sh
+
+COPY kernel-cc7.json /root/.local/share/jupyter/kernels/python3/kernel.json 
+
+COPY ./ca.crt /ca.crt
+
+WORKDIR /etc/yum.repos.d/
+RUN wget http://repository.egi.eu/sw/production/cas/1/current/repo-files/EGI-trustanchors.repo
+RUN wget http://linuxsoft.cern.ch/wlcg/wlcg-centos7.repo
+WORKDIR /etc/pki/rpm-gpg
+RUN wget http://linuxsoft.cern.ch/wlcg/RPM-GPG-KEY-wlcg
+
+RUN yum install -y wlcg-voms-cms singularity-runtime voms-clients-cpp ca-policy-lcg
+
+WORKDIR /opt/workspace
