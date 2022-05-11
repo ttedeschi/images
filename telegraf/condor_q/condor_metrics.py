@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import htcondor
-import classad
 
 schedd = htcondor.Schedd()
 for it in schedd.xquery(projection=["Requirements", "Owner", "JobId","JobStatus", "RequestMemory", "RequestCpus"]):
@@ -10,14 +9,13 @@ for it in schedd.xquery(projection=["Requirements", "Owner", "JobId","JobStatus"
     else:
         SiteName = ""
 
-    if not "JobId" in it:
+    if "JobId" not in it:
         continue
 
     try:
         it["RequestMemory"] = it["RequestMemory"].eval()
     except:
         pass
-
 
     try:
         it["RequestCpus"] = it["RequestCpus"].eval()
@@ -26,5 +24,4 @@ for it in schedd.xquery(projection=["Requirements", "Owner", "JobId","JobStatus"
 
     JobStatus = htcondor.JobStatus(it["JobStatus"]).name
 
-    print("job,JobId=\"%s\",owner=\"%s\",SiteName=\"%s\",JobStatus=\"%s\" count=1,memory=%d,cpus=%d" % (it["JobId"], it["Owner"], SiteName, JobStatus, it["RequestMemory"], it["RequestCpus"] ))
-
+    print("job,JobId=\"%s\",owner=\"%s\",SiteName=\"%s\",JobStatus=\"%s\" count=1,memory=%d,cpus=%d" % (it["JobId"], it["Owner"], SiteName, JobStatus, it["RequestMemory"], it["RequestCpus"]))

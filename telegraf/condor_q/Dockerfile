@@ -7,7 +7,7 @@ RUN curl -fsSL https://research.cs.wisc.edu/htcondor/repo/keys/HTCondor-Release.
 
 RUN apt-get update && apt-get install -y htcondor
 
-COPY test.py /bin/condor_metrics
+COPY condor_metrics.py /bin/condor_metrics
 COPY condor_metrics.sh /bin/condor_metrics.sh
 COPY ca.crt /etc/ca.crt
 
