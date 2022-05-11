@@ -18,7 +18,7 @@ jobs:
       matrix:
         dockerfile:
           - jupyterlab/Dockerfile.base
-          - jupyterlab/Dockerfile.dask
+          - jupyterlab/Dockerfile.dask-cc7
           - htcondor/execute/dask/Dockerfile
     runs-on: ubuntu-latest
     steps:
