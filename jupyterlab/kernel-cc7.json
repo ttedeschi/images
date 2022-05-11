@@ -1,7 +1,7 @@
 {
     "argv": [
         "bash", "-c",
-        "source /cvmfs/cms.dodas.infn.it/miniconda3/etc/profile.d/conda.sh; conda activate af-test; source /cvmfs/cms.dodas.infn.it/miniconda3/envs/af-test/bin/thisroot.sh; python3 -m ipykernel_launcher -f {connection_file}"
+        "source /cvmfs/cms.dodas.infn.it/miniconda3/etc/profile.d/conda.sh; conda activate af; source /cvmfs/cms.dodas.infn.it/miniconda3/envs/af/bin/thisroot.sh; python3 -m ipykernel_launcher -f {connection_file}"
     ],
     "display_name": "Python 3 (ipykernel)",
     "language": "python",
