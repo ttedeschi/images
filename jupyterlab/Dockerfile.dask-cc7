@@ -96,7 +96,7 @@ WORKDIR /usr/local/share/comp-dev-cms-ita/dask-labextension
 RUN jlpm \
     && jlpm build \
     && npm cache clean --force
-RUN python3 -m pip install --use-feature=in-tree-build .
+RUN python3 -m pip install .
 
 # Build jupyter lab stuff in release mode
 # RUN /bin/bash -c "jupyter lab build --dev-build=False --minimize=True"
@@ -109,7 +109,7 @@ RUN git clone --branch v0.6.0-af-test  https://github.com/comp-dev-cms-ita/dask-
 # RUN python3 setup.py install
 # WORKDIR /usr/local/share/comp-dev-cms-ita
 RUN cd /usr/local/share/comp-dev-cms-ita/dask-remote-jobqueue \
-    && python3 -m pip install -U --use-feature=in-tree-build .
+    && python3 -m pip install -U .
 
 RUN mkdir -p /root/.ipython
 
