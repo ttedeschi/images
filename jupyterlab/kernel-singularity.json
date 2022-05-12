@@ -2,6 +2,7 @@
     "argv": [
       "singularity",
       "exec",
+      "--no-home",
       "-B",
       "/cvmfs:/cvmfs",
       "-B",
