@@ -122,6 +122,9 @@ COPY ./spawn.sh /root/.init/spawn.sh
 RUN chmod +x /usr/local/bin/jupyterhub-singleuser.sh
 RUN chmod +x /usr/local/bin/jupyterhub-singleuser && chmod +x /root/.init/spawn.sh
 
+RUN python3 -m ipykernel install --user --name singularity-kernel --display-name="Singularity Python 3 (ipykernel)"
+
+COPY kernel-singularity.json /root/.local/share/jupyter/kernels/singularity-kernel/kernel.json 
 COPY kernel-cc7.json /root/.local/share/jupyter/kernels/python3/kernel.json 
 
 COPY ./ca.crt /ca.crt
