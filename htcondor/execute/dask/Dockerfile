@@ -32,6 +32,7 @@ RUN yum -y update \
     openssl-devel \
     python \
     readline-devel \
+    singularity \
     sqlite-devel \
     xz-devel \
     yad \
