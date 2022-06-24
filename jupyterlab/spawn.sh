@@ -24,6 +24,11 @@ while true; do
     sleep 600
 done &
 
+
+cd /.init
+
+./sts-wire https://cms-auth.web.cern.ch ${USERNAME} https://131.154.96.201:31631/ /home /mnt/minio --insecureConn --localCache full --tryRemount --noDummyFileCheck --localCacheDir "/opt/user_data/cache/${USERNAME}" > /.init/mount_${USERNAME}.txt &
+
 if [[ -f "/cvmfs/cms.dodas.infn.it/miniconda3/etc/profile.d/conda.sh" ]]; then
     source /cvmfs/cms.dodas.infn.it/miniconda3/etc/profile.d/conda.sh
     conda activate af
