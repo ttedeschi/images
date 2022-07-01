@@ -7,7 +7,7 @@
       "-B",
       "/opt/workspace:/opt/workspace",
       "--cleanenv",
-      "/cvmfs/images.dodas.infn.it/registry.hub.docker.com/dodasts/root-in-docker:ubuntu22-kernel-v1",
+      "/cvmfs/images.dodas.infn.it/registry.hub.docker.com/dodasts/root-in-docker:ubuntu22-kernel-v1-monitoring",
       "python3",
       "-m",
       "ipykernel",
