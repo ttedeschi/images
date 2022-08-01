@@ -123,9 +123,18 @@ COPY ./spawn.sh /root/.init/spawn.sh
 RUN chmod +x /usr/local/bin/jupyterhub-singleuser.sh
 RUN chmod +x /usr/local/bin/jupyterhub-singleuser && chmod +x /root/.init/spawn.sh
 
-RUN python3 -m ipykernel install --user --name singularity-kernel --display-name="Singularity Python 3 (ipykernel)"
+## TODO: doable via customizable kernel https://github.com/comp-dev-cms-ita/jupyterlab-custom-kernel
+#RUN python3 -m ipykernel install --user --name singularity-kernel --display-name="Singularity Python 3 (ipykernel)"
+#COPY kernel-singularity.json /root/.local/share/jupyter/kernels/singularity-kernel/kernel.json 
 
-COPY kernel-singularity.json /root/.local/share/jupyter/kernels/singularity-kernel/kernel.json 
+RUN git clone https://github.com/comp-dev-cms-ita/jupyterlab-custom-kernel \
+    && cd jupyterlab-custom-kernel \
+    && jlpm \
+    && jlpm build \
+    && npm cache clean --force \
+    && python3 -m pip install -U . \
+    && jupyter kernelspec install ./singularity-kernel
+
 COPY kernel-cc7.json /root/.local/share/jupyter/kernels/python3/kernel.json 
 
 COPY ./ca.crt /ca.crt
@@ -141,5 +150,8 @@ RUN yum install -y wlcg-voms-cms singularity-runtime voms-clients-cpp ca-policy-
 RUN mkdir -p /.init \
     && wget https://github.com/DODAS-TS/sts-wire/releases/download/v2.0.0/sts-wire_linux -O /.init/sts-wire \
     && chmod +x /.init/sts-wire
+
+# Install tailwind css
+RUN jupyter labextension install jupyterlab-tailwind-theme
 
 WORKDIR /opt/workspace
