@@ -61,10 +61,10 @@ ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /bin/
 RUN chmod +x /bin/tini
 
 RUN python3 -m pip install \
-    "dask[complete]==2021.11.1" \
+    "dask[complete]==2022.9.2" \
     bokeh \
     click==7.1.2 \
-    dask-jobqueue==0.7.3 \
+    dask-jobqueue==0.8.1 \
     ipython \
     ipywidgets==7.6.5 \
     jupyter-server-proxy \
@@ -89,7 +89,7 @@ RUN yum install -y nodejs npm && npm install -g typescript yarn
 
 # Install DASK labextension
 WORKDIR /usr/local/share/comp-dev-cms-ita
-RUN git clone --branch v1.0.3 https://github.com/comp-dev-cms-ita/dask-labextension.git
+RUN git clone --branch v2.0.1 https://github.com/comp-dev-cms-ita/dask-labextension.git
 #RUN git clone https://github.com/comp-dev-cms-ita/dask-labextension.git
 COPY labextension.yaml /usr/local/share/comp-dev-cms-ita/dask-labextension/dask_labextension/
 
@@ -105,7 +105,7 @@ RUN python3 -m pip install .
 WORKDIR /usr/local/share/comp-dev-cms-ita
 
 # Install DASK remote jobqueue
-RUN git clone --branch v1.0.0  https://github.com/comp-dev-cms-ita/dask-remote-jobqueue
+RUN git clone --branch v2.0.0  https://github.com/comp-dev-cms-ita/dask-remote-jobqueue
 # WORKDIR /usr/local/share/comp-dev-cms-ita/dask-remote-jobqueue
 # RUN python3 setup.py install
 # WORKDIR /usr/local/share/comp-dev-cms-ita
