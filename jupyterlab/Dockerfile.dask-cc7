@@ -152,4 +152,6 @@ RUN mkdir -p /.init \
 # Install tailwind css
 RUN jupyter labextension install jupyterlab-tailwind-theme
 
+RUN ln -s `which python3.9` /usr/local/bin/python3
+
 WORKDIR /opt/workspace
