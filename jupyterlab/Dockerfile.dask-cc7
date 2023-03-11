@@ -142,7 +142,8 @@ RUN wget http://linuxsoft.cern.ch/wlcg/wlcg-centos8.repo
 WORKDIR /etc/pki/rpm-gpg
 RUN wget http://linuxsoft.cern.ch/wlcg/RPM-GPG-KEY-wlcg
 
-RUN yum install -y wlcg-voms-cms singularity voms-clients-cpp ca-policy-lcg
+RUN yum install -y wlcg-voms-cms apptainer voms-clients-cpp ca-policy-lcg
+
 
 RUN mkdir -p /.init \
     && wget https://github.com/DODAS-TS/sts-wire/releases/download/v2.0.0/sts-wire_linux -O /.init/sts-wire \
