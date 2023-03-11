@@ -47,12 +47,8 @@ RUN python3.9 -m pip install --no-cache-dir \
     notebook==6.4.5 \
     pycurl==7.44.1 
 
-RUN yum install -y https://research.cs.wisc.edu/htcondor/repo/8.9/htcondor-release-current.el8.noarch.rpm 
-
-RUN sed -i "s/current/8\.9/" /etc/yum.repos.d/htcondor.repo
-
-RUN yum install -y https://repo.almalinux.org/almalinux/8/PowerTools/x86_64/os/Packages/boost-python3-1.66.0-13.el8.x86_64.rpm
-RUN yum install -y condor-8.9.13 
+RUN yum install -y https://research.cs.wisc.edu/htcondor/repo/9.1/htcondor-release-current.el8.noarch.rpm \
+      && yum install -y condor
 
 ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /bin/tini
