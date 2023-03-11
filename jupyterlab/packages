@@ -1,4 +1,5 @@
 binutils
+bzip2-devel
 cairo-devel
 cmake3
 curl
@@ -9,12 +10,9 @@ gcc-c++
 gcc-gfortran
 gfal2-all
 gfal2-devel
-giflib-devel
 git
-graphviz-devel
 libargon2-devel
 libcurl-devel
-libcurl-openssl-devel
 libffi-devel
 libjpeg-turbo-devel
 libtiff-devel
@@ -22,13 +20,11 @@ libxml2-devel
 lz4-devel
 make
 openssl-devel
-pangox-compat-devel
 pixman-devel
 readline-devel
 redhat-lsb-core
 redhat-rpm-config
 sqlite-devel
 wget
-xxhash-devel
 xz-devel
 zlib-devel

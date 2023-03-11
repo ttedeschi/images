@@ -1,4 +1,4 @@
-ARG BASE_IMAGE="cern/cc7-base"
+ARG BASE_IMAGE="almalinux:8.6"
 FROM ${BASE_IMAGE}
 
 COPY packages /tmp/
@@ -7,33 +7,33 @@ COPY packages /tmp/
 RUN yum -y clean metadata \
     &&yum -y update \
     && yum -y upgrade \
-    && yum -y install epel-release \
+    && yum -y install epel-release python39 python39-devel \
     && xargs yum -y install < /tmp/packages \
     && yum -y clean all \
-    && localedef -i en_US -f UTF-8 en_US.UTF-8 \
     && rm -f /tmp/packages \
     && yum clean all
 
 # Overwrite python3 with python3.9 (Dask requirement)
-RUN cd /usr/src \
-    && wget https://www.python.org/ftp/python/3.9.9/Python-3.9.9.tgz \
-    && tar xzf Python-3.9.9.tgz \
-    && rm Python-3.9.9.tgz \
-    && cd Python-3.9.9 \
-    && ./configure --enable-optimizations \
-    && make install
+# RUN cd /usr/src \
+#     && wget https://www.python.org/ftp/python/3.9.9/Python-3.9.9.tgz \
+#     && tar xzf Python-3.9.9.tgz \
+#     && rm Python-3.9.9.tgz \
+#     && cd Python-3.9.9 \
+#     && ./configure --enable-optimizations \
+#     && make install
 
-RUN python3 -m pip install -U pip setuptools wheel
+RUN python3.9 -m pip install -U pip setuptools wheel
 
+RUN curl -fsSL https://rpm.nodesource.com/setup_14.x | bash -
+
+#RUN yum install -y npm && npm i -g n && n 14 && npm install -g typescript yarn
+
+RUN yum install -y  nodejs npm && npm install -g typescript yarn
 
 WORKDIR /
 
-# Install oidc-agent
-RUN cd /etc/yum.repos.d && wget --progress=bar https://repo.data.kit.edu/data-kit-edu-centos7.repo
-RUN yum install -y oidc-agent && yum clean all
-
 # Install jupyterlab
-RUN python3 -m pip install --no-cache-dir \
+RUN python3.9 -m pip install --no-cache-dir \
     idna==3.3 \
     importlib-metadata==3.10.1 \
     ipympl==0.8.2 \
@@ -47,21 +47,19 @@ RUN python3 -m pip install --no-cache-dir \
     notebook==6.4.5 \
     pycurl==7.44.1 
 
-#FROM dodasts/snj-base-lab-cc7:v1.0.0-snj
-
-RUN yum install -y epel-release
-RUN yum install -y https://research.cs.wisc.edu/htcondor/repo/8.9/htcondor-release-current.el7.noarch.rpm 
+RUN yum install -y https://research.cs.wisc.edu/htcondor/repo/8.9/htcondor-release-current.el8.noarch.rpm 
 
 RUN sed -i "s/current/8\.9/" /etc/yum.repos.d/htcondor.repo
 
-RUN yum install -y 	condor-8.9.13 
+RUN yum install -y https://repo.almalinux.org/almalinux/8/PowerTools/x86_64/os/Packages/boost-python3-1.66.0-13.el8.x86_64.rpm
+RUN yum install -y condor-8.9.13 
 
 ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /bin/tini
 RUN chmod +x /bin/tini
 
-RUN python3 -m pip install \
-    "dask[complete]==2022.9.2" \
+RUN python3.9 -m pip install \
+    dask[complete]==2022.9.2 \
     bokeh \
     click==7.1.2 \
     dask-jobqueue==0.8.1 \
@@ -72,9 +70,8 @@ RUN python3 -m pip install \
     pandas==1.3.3 \
     toolz==0.11.1
 
-RUN python3 -m pip install "dask[dataframe]==2021.11.1"
+RUN python3.9 -m pip install "dask[dataframe]==2022.9.2"
 
-RUN yum install -y nodejs npm && npm install -g typescript yarn
 
 ## Install Rucio plugin
 #RUN yum install -y voms-clients-java \
@@ -97,7 +94,7 @@ WORKDIR /usr/local/share/comp-dev-cms-ita/dask-labextension
 RUN jlpm \
     && jlpm build \
     && npm cache clean --force
-RUN python3 -m pip install .
+RUN python3.9 -m pip install .
 
 # Build jupyter lab stuff in release mode
 # RUN /bin/bash -c "jupyter lab build --dev-build=False --minimize=True"
@@ -110,7 +107,7 @@ RUN git clone --branch v2.0.0  https://github.com/comp-dev-cms-ita/dask-remote-j
 # RUN python3 setup.py install
 # WORKDIR /usr/local/share/comp-dev-cms-ita
 RUN cd /usr/local/share/comp-dev-cms-ita/dask-remote-jobqueue \
-    && python3 -m pip install -U .
+    && python3.9 -m pip install -U .
 
 RUN mkdir -p /root/.ipython
 
@@ -127,12 +124,12 @@ RUN chmod +x /usr/local/bin/jupyterhub-singleuser && chmod +x /root/.init/spawn.
 #RUN python3 -m ipykernel install --user --name singularity-kernel --display-name="Singularity Python 3 (ipykernel)"
 #COPY kernel-singularity.json /root/.local/share/jupyter/kernels/singularity-kernel/kernel.json 
 
-RUN git clone https://github.com/comp-dev-cms-ita/jupyterlab-custom-kernel \
+RUN git clone --branch v1.0.9 https://github.com/comp-dev-cms-ita/jupyterlab-custom-kernel \
     && cd jupyterlab-custom-kernel \
     && jlpm \
     && jlpm build \
     && npm cache clean --force \
-    && python3 -m pip install -U . \
+    && python3.9 -m pip install -U . \
     && jupyter kernelspec install ./singularity-kernel
 
 COPY kernel-cc7.json /root/.local/share/jupyter/kernels/python3/kernel.json 
@@ -141,11 +138,11 @@ COPY ./ca.crt /ca.crt
 
 WORKDIR /etc/yum.repos.d/
 RUN wget http://repository.egi.eu/sw/production/cas/1/current/repo-files/EGI-trustanchors.repo
-RUN wget http://linuxsoft.cern.ch/wlcg/wlcg-centos7.repo
+RUN wget http://linuxsoft.cern.ch/wlcg/wlcg-centos8.repo
 WORKDIR /etc/pki/rpm-gpg
 RUN wget http://linuxsoft.cern.ch/wlcg/RPM-GPG-KEY-wlcg
 
-RUN yum install -y wlcg-voms-cms singularity-runtime voms-clients-cpp ca-policy-lcg
+RUN yum install -y wlcg-voms-cms singularity voms-clients-cpp ca-policy-lcg
 
 RUN mkdir -p /.init \
     && wget https://github.com/DODAS-TS/sts-wire/releases/download/v2.0.0/sts-wire_linux -O /.init/sts-wire \

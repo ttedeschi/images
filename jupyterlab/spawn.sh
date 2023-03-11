@@ -1,39 +1,35 @@
 #!/usr/bin/env bash
 
-export OIDC_CONFIG_DIR=$HOME/.oidc-agent
-
-# Configure oidc-agent for user token management
-# Ref: https://indigo-dc.gitbook.io/oidc-agent/user/oidc-keychain
-echo -e "\nexport OIDC_CONFIG_DIR=$HOME/.oidc-agent" >>~/.bashrc
-echo -e "\neval \`oidc-keychain\`" >>~/.bashrc
-
-eval $(oidc-keychain)
-
-oidc-gen dodas --issuer "$IAM_SERVER" \
-    --client-id "$IAM_CLIENT_ID" \
-    --client-secret "$IAM_CLIENT_SECRET" \
-    --rt "$REFRESH_TOKEN" \
-    --confirm-yes \
-    --aud "$MINIO_AUDIENCE" \
-    --scope "openid profile email wlcg wlcg.groups" \
-    --redirect-uri http://localhost:8843 \
-    --pw-cmd "echo \"DUMMY PWD\""
+curl -d grant_type=urn:ietf:params:oauth:grant-type:token-exchange \
+   -u $IAM_CLIENT_ID:$IAM_CLIENT_SECRET \
+   -d audience="https://wlcg.cern.ch/jwt/v1/any" \
+   -d subject_token=$ACCESS_TOKEN \
+   -d scope="openid profile wlcg wlcg.groups" \
+   https://cms-auth.web.cern.ch/token \
+   | tee /tmp/response | jq .access_token |  tr -d '"' |  tr -d '\n'> /tmp/token
 
 while true; do
-    oidc-token dodas --aud "https://wlcg.cern.ch/jwt/v1/any" --time 1200 >/tmp/token
-    sleep 600
+    curl -d grant_type=urn:ietf:params:oauth:grant-type:token-exchange \
+        -u $IAM_CLIENT_ID:$IAM_CLIENT_SECRET \
+        -d audience="https://wlcg.cern.ch/jwt/v1/any" \
+        -d subject_token=`cat /tmp/token` \
+        -d scope="openid profile wlcg wlcg.groups" \
+        https://cms-auth.web.cern.ch/token \
+        | tee /tmp/response | jq .access_token |  tr -d '"' |  tr -d '\n'> /tmp/token_tmp \
+    && cp /tmp/token_tmp /tmp/token
+    sleep 72000
 done &
 
 
 cd /.init
 
-./sts-wire https://cms-auth.web.cern.ch ${USERNAME} https://131.154.96.201:31631/ /home /mnt/minio --insecureConn --localCache full --tryRemount --noDummyFileCheck --localCacheDir "/opt/user_data/cache/${USERNAME}" > /.init/mount_${USERNAME}.txt &
+#./sts-wire https://cms-auth.web.cern.ch ${USERNAME} https://131.154.96.201:31631/ /home /mnt/minio --insecureConn --localCache full --tryRemount --noDummyFileCheck --localCacheDir "/opt/user_data/cache/${USERNAME}" > /.init/mount_${USERNAME}.txt &
 
-if [[ -f "/cvmfs/cms.dodas.infn.it/miniconda3/etc/profile.d/conda.sh" ]]; then
-    source /cvmfs/cms.dodas.infn.it/miniconda3/etc/profile.d/conda.sh
-    conda activate af
-    source /cvmfs/cms.dodas.infn.it/miniconda3/envs/af/bin/thisroot.sh
-    #export LD_LIBRARY_PATH=/cvmfs/cms.dodas.infn.it/miniconda3/envs/cms-dodas/lib:$LD_LIBRARY_PATH
-    export JUPYTER_PATH=/opt/conda/etc/jupyter
-    export JUPYTER_CONFIG_DIR=/opt/conda/etc/jupyter
-fi
+# if [[ -f "/cvmfs/cms.dodas.infn.it/miniconda3/etc/profile.d/conda.sh" ]]; then
+#     source /cvmfs/cms.dodas.infn.it/miniconda3/etc/profile.d/conda.sh
+#     conda activate af
+#     source /cvmfs/cms.dodas.infn.it/miniconda3/envs/af/bin/thisroot.sh
+#     #export LD_LIBRARY_PATH=/cvmfs/cms.dodas.infn.it/miniconda3/envs/cms-dodas/lib:$LD_LIBRARY_PATH
+#     export JUPYTER_PATH=/opt/conda/etc/jupyter
+#     export JUPYTER_CONFIG_DIR=/opt/conda/etc/jupyter
+# fi
