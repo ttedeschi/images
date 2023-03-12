@@ -128,7 +128,7 @@ RUN chmod +x /usr/local/bin/jupyterhub-singleuser && chmod +x /root/.init/spawn.
 #COPY kernel-singularity.json /root/.local/share/jupyter/kernels/singularity-kernel/kernel.json 
 
 RUN git clone --branch v1.0.12 https://github.com/comp-dev-cms-ita/jupyterlab-custom-kernel \
-cd jupyterlab-custom-kernel \
+    && cd jupyterlab-custom-kernel \
     && jlpm \
     && jlpm build \
     && npm cache clean --force \
