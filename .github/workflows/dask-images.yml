@@ -194,7 +194,7 @@ jobs:
           context: ./jupyterlab/
           outputs: "type=registry,push=true"
           tags: |
-            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/jupyterlab:${{ env.RELEASE_VERSION }}-dask-test
-          file: ./jupyterlab/Dockerfile.dask-cc7-test
+            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/jupyterlab:${{ env.RELEASE_VERSION }}-dask-alma8
+          file: ./jupyterlab/Dockerfile.dask-alma8
           platforms: linux/amd64
           build-args: "NOTEBOOK_VERSION=${{ env.RELEASE_VERSION }}"

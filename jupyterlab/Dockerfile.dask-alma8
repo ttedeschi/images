@@ -1,4 +1,4 @@
-ARG BASE_IMAGE="almalinux:8.6"
+ARG BASE_IMAGE="cern/alma8-base"
 FROM ${BASE_IMAGE}
 
 COPY packages /tmp/
@@ -37,7 +37,7 @@ RUN python3.9 -m pip install --no-cache-dir \
     pycurl==7.44.1 
 
 
-RUN yum install -y https://research.cs.wisc.edu/htcondor/repo/9.1/htcondor-release-current.el8.noarch.rpm
+RUN yum install -y https://research.cs.wisc.edu/htcondor/repo/8.9/htcondor-release-current.el8.noarch.rpm
 
 RUN sed -i 's/current/8.9/g' /etc/yum.repos.d/htcondor.repo
 
