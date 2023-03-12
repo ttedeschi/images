@@ -21,7 +21,7 @@ while true; do
 done &
 
 
-cd /.init
+#cd /.init
 
 #./sts-wire https://cms-auth.web.cern.ch ${USERNAME} https://131.154.96.201:31631/ /home /mnt/minio --insecureConn --localCache full --tryRemount --noDummyFileCheck --localCacheDir "/opt/user_data/cache/${USERNAME}" > /.init/mount_${USERNAME}.txt &
 

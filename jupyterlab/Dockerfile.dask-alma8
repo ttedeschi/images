@@ -1,39 +1,28 @@
-ARG BASE_IMAGE="cern/cc7-base"
+ARG BASE_IMAGE="almalinux:8.6"
 FROM ${BASE_IMAGE}
 
 COPY packages /tmp/
 
-# clean metadata: https://srvfail.com/yum-doesnt-work-in-clean-centos-7-install-exiting-on-user-cancel/
 RUN yum -y clean metadata \
-    &&yum -y update \
-    && yum -y upgrade \
-    && yum -y install epel-release \
+    && yum install -y dnf-plugins-core \
+    && yum -y install epel-release python39 python39-devel boost-python3 \
     && xargs yum -y install < /tmp/packages \
     && yum -y clean all \
-    && localedef -i en_US -f UTF-8 en_US.UTF-8 \
     && rm -f /tmp/packages \
     && yum clean all
 
-# Overwrite python3 with python3.9 (Dask requirement)
-RUN cd /usr/src \
-    && wget https://www.python.org/ftp/python/3.9.9/Python-3.9.9.tgz \
-    && tar xzf Python-3.9.9.tgz \
-    && rm Python-3.9.9.tgz \
-    && cd Python-3.9.9 \
-    && ./configure --enable-optimizations \
-    && make install
+RUN ln -s `which python3.9` /usr/local/bin/python3
 
-RUN python3 -m pip install -U pip setuptools wheel
+RUN python3.9 -m pip install -U pip setuptools wheel
 
+RUN curl -fsSL https://rpm.nodesource.com/setup_14.x | bash -
+
+RUN yum install -y  nodejs npm && npm install -g typescript yarn
 
 WORKDIR /
 
-# Install oidc-agent
-RUN cd /etc/yum.repos.d && wget --progress=bar https://repo.data.kit.edu/data-kit-edu-centos7.repo
-RUN yum install -y oidc-agent && yum clean all
-
 # Install jupyterlab
-RUN python3 -m pip install --no-cache-dir \
+RUN python3.9 -m pip install --no-cache-dir \
     idna==3.3 \
     importlib-metadata==3.10.1 \
     ipympl==0.8.2 \
@@ -47,24 +36,22 @@ RUN python3 -m pip install --no-cache-dir \
     notebook==6.4.5 \
     pycurl==7.44.1 
 
-#FROM dodasts/snj-base-lab-cc7:v1.0.0-snj
 
-RUN yum install -y epel-release
-RUN yum install -y https://research.cs.wisc.edu/htcondor/repo/8.9/htcondor-release-current.el7.noarch.rpm 
+RUN yum install -y https://research.cs.wisc.edu/htcondor/repo/9.1/htcondor-release-current.el8.noarch.rpm
 
-RUN sed -i "s/current/8\.9/" /etc/yum.repos.d/htcondor.repo
+RUN sed -i 's/current/8.9/g' /etc/yum.repos.d/htcondor.repo
 
-RUN yum install -y 	condor-8.9.13 
+RUN yum install -y condor
 
 ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /bin/tini
 RUN chmod +x /bin/tini
 
-RUN python3 -m pip install \
-    "dask[complete]==2021.11.1" \
+RUN python3.9 -m pip install \
+    dask[complete]==2022.9.2 \
     bokeh \
     click==7.1.2 \
-    dask-jobqueue==0.7.3 \
+    dask-jobqueue==0.8.1 \
     ipython \
     ipywidgets==7.6.5 \
     jupyter-server-proxy \
@@ -72,9 +59,8 @@ RUN python3 -m pip install \
     pandas==1.3.3 \
     toolz==0.11.1
 
-RUN python3 -m pip install "dask[dataframe]==2021.11.1"
+RUN python3.9 -m pip install "dask[dataframe]==2022.9.2"
 
-RUN yum install -y nodejs npm && npm install -g typescript yarn
 
 ## Install Rucio plugin
 #RUN yum install -y voms-clients-java \
@@ -89,14 +75,15 @@ RUN yum install -y nodejs npm && npm install -g typescript yarn
 
 # Install DASK labextension
 WORKDIR /usr/local/share/comp-dev-cms-ita
-RUN git clone --branch v0.0.5 https://github.com/comp-dev-cms-ita/dask-labextension.git
+RUN git clone --branch v2.0.1 https://github.com/comp-dev-cms-ita/dask-labextension.git
+#RUN git clone https://github.com/comp-dev-cms-ita/dask-labextension.git
 COPY labextension.yaml /usr/local/share/comp-dev-cms-ita/dask-labextension/dask_labextension/
 
 WORKDIR /usr/local/share/comp-dev-cms-ita/dask-labextension
 RUN jlpm \
     && jlpm build \
     && npm cache clean --force
-RUN python3 -m pip install .
+RUN python3.9 -m pip install .
 
 # Build jupyter lab stuff in release mode
 # RUN /bin/bash -c "jupyter lab build --dev-build=False --minimize=True"
@@ -104,12 +91,9 @@ RUN python3 -m pip install .
 WORKDIR /usr/local/share/comp-dev-cms-ita
 
 # Install DASK remote jobqueue
-RUN git clone --branch v0.6.0-af-test  https://github.com/comp-dev-cms-ita/dask-remote-jobqueue
-# WORKDIR /usr/local/share/comp-dev-cms-ita/dask-remote-jobqueue
-# RUN python3 setup.py install
-# WORKDIR /usr/local/share/comp-dev-cms-ita
+RUN git clone --branch v2.0.0  https://github.com/comp-dev-cms-ita/dask-remote-jobqueue
 RUN cd /usr/local/share/comp-dev-cms-ita/dask-remote-jobqueue \
-    && python3 -m pip install -U .
+    && python3.9 -m pip install -U .
 
 RUN mkdir -p /root/.ipython
 
@@ -118,20 +102,36 @@ COPY ./condor_config /etc/condor/condor_config
 COPY ./htc-demo  /opt/workspace/htc-example
 COPY ./jupyterhub-singleuser-cc7.sh /usr/local/bin/jupyterhub-singleuser.sh
 COPY ./jupyterhub-singleuser-cc7 /usr/local/bin/jupyterhub-singleuser
-COPY ./spawn-test.sh /root/.init/spawn.sh
+COPY ./spawn.sh /root/.init/spawn.sh
 RUN chmod +x /usr/local/bin/jupyterhub-singleuser.sh
 RUN chmod +x /usr/local/bin/jupyterhub-singleuser && chmod +x /root/.init/spawn.sh
 
-COPY kernel-cc7-test.json /root/.local/share/jupyter/kernels/python3/kernel.json 
+RUN git clone --branch v1.0.9 https://github.com/comp-dev-cms-ita/jupyterlab-custom-kernel \
+    && cd jupyterlab-custom-kernel \
+    && jlpm \
+    && jlpm build \
+    && npm cache clean --force \
+    && python3.9 -m pip install -U . \
+    && jupyter kernelspec install ./singularity-kernel
+
+COPY kernel-cc7.json /root/.local/share/jupyter/kernels/python3/kernel.json 
 
 COPY ./ca.crt /ca.crt
 
 WORKDIR /etc/yum.repos.d/
 RUN wget http://repository.egi.eu/sw/production/cas/1/current/repo-files/EGI-trustanchors.repo
-RUN wget http://linuxsoft.cern.ch/wlcg/wlcg-centos7.repo
+RUN wget http://linuxsoft.cern.ch/wlcg/wlcg-centos8.repo
 WORKDIR /etc/pki/rpm-gpg
 RUN wget http://linuxsoft.cern.ch/wlcg/RPM-GPG-KEY-wlcg
 
-RUN yum install -y wlcg-voms-cms singularity-runtime voms-clients-cpp ca-policy-lcg
+RUN yum install -y wlcg-voms-cms apptainer voms-clients-cpp ca-policy-lcg
+
+
+RUN mkdir -p /.init \
+    && wget https://github.com/DODAS-TS/sts-wire/releases/download/v2.0.0/sts-wire_linux -O /.init/sts-wire \
+    && chmod +x /.init/sts-wire
+
+# Install tailwind css
+RUN jupyter labextension install jupyterlab-tailwind-theme
 
 WORKDIR /opt/workspace
