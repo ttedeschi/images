@@ -5,7 +5,7 @@ COPY packages /tmp/
 
 RUN yum -y clean metadata \
     && yum install -y dnf-plugins-core \
-    && yum -y install epel-release python39 python39-devel boost-python3 \
+    && yum -y install epel-release python39 python39-pip python39-devel boost-python3 \
     && xargs yum -y install < /tmp/packages \
     && yum -y clean all \
     && rm -f /tmp/packages \
@@ -112,7 +112,9 @@ RUN git clone --branch v1.0.9 https://github.com/comp-dev-cms-ita/jupyterlab-cus
     && jlpm build \
     && npm cache clean --force \
     && python3.9 -m pip install -U . \
-    && jupyter kernelspec install ./singularity-kernel
+    && jupyter kernelspec install ./singularity-kernel \
+    && jupyter labextension link . --dev-build=False \
+    && jupyter lab clean -y 
 
 COPY kernel-cc7.json /root/.local/share/jupyter/kernels/python3/kernel.json 
 

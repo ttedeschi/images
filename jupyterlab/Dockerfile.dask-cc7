@@ -133,7 +133,9 @@ RUN git clone https://github.com/comp-dev-cms-ita/jupyterlab-custom-kernel \
     && jlpm build \
     && npm cache clean --force \
     && python3 -m pip install -U . \
-    && jupyter kernelspec install ./singularity-kernel
+    && jupyter kernelspec install ./singularity-kernel \
+    && jupyter labextension link . --dev-build=False \
+    && jupyter lab clean -y 
 
 COPY kernel-cc7.json /root/.local/share/jupyter/kernels/python3/kernel.json 
 
