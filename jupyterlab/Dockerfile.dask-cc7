@@ -7,7 +7,7 @@ COPY packages /tmp/
 RUN yum -y clean metadata \
     &&yum -y update \
     && yum -y upgrade \
-    && yum -y install epel-release \
+    && yum -y install epel-release jq \
     && xargs yum -y install < /tmp/packages \
     && yum -y clean all \
     && localedef -i en_US -f UTF-8 en_US.UTF-8 \
@@ -127,7 +127,7 @@ RUN chmod +x /usr/local/bin/jupyterhub-singleuser && chmod +x /root/.init/spawn.
 #RUN python3 -m ipykernel install --user --name singularity-kernel --display-name="Singularity Python 3 (ipykernel)"
 #COPY kernel-singularity.json /root/.local/share/jupyter/kernels/singularity-kernel/kernel.json 
 
-RUN git clone --branch v1.0.12 https://github.com/comp-dev-cms-ita/jupyterlab-custom-kernel \
+RUN git clone --branch v1.0.18 https://github.com/comp-dev-cms-ita/jupyterlab-custom-kernel \
     && cd jupyterlab-custom-kernel \
     && jlpm \
     && jlpm build \
@@ -154,5 +154,7 @@ RUN yum install -y wlcg-voms-cms singularity-runtime voms-clients-cpp ca-policy-
 
 # Install tailwind css
 RUN jupyter labextension install jupyterlab-tailwind-theme
+
+RUN jupyter lab build
 
 WORKDIR /opt/workspace

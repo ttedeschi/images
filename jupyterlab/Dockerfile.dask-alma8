@@ -7,9 +7,9 @@ RUN yum -y clean metadata \
     && yum install -y dnf-plugins-core \
     && yum -y install epel-release python39 python39-pip python39-devel boost-python3 \
     && xargs yum -y install < /tmp/packages \
-    && yum -y clean all \
-    && rm -f /tmp/packages \
-    && yum clean all
+    && yum -y clean all 
+    #&& rm -f /tmp/packages \
+    #&& yum clean all
 
 RUN ln -s `which python3.9` /usr/local/bin/python3
 
@@ -106,7 +106,7 @@ COPY ./spawn.sh /root/.init/spawn.sh
 RUN chmod +x /usr/local/bin/jupyterhub-singleuser.sh
 RUN chmod +x /usr/local/bin/jupyterhub-singleuser && chmod +x /root/.init/spawn.sh
 
-RUN git clone --branch v1.0.12 https://github.com/comp-dev-cms-ita/jupyterlab-custom-kernel \
+RUN git clone --branch v1.0.18 https://github.com/comp-dev-cms-ita/jupyterlab-custom-kernel \
     && cd jupyterlab-custom-kernel \
     && jlpm \
     && jlpm build \
@@ -134,5 +134,10 @@ RUN mkdir -p /.init \
 
 # Install tailwind css
 RUN jupyter labextension install jupyterlab-tailwind-theme
+
+RUN jupyter lab build
+
+RUN mkdir -p ~/.jupyter/lab/settings && \
+    echo '{"@jupyterlab/apputils-extension:themes": {"theme":"Tailwind Light"}}'> ~/.jupyter/lab/settings/overrides.json
 
 WORKDIR /opt/workspace
