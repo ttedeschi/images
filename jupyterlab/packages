@@ -11,6 +11,7 @@ gcc-gfortran
 gfal2-all
 gfal2-devel
 git
+jq
 libargon2-devel
 libcurl-devel
 libffi-devel
