@@ -37,12 +37,6 @@ RUN python3.9 -m pip install --no-cache-dir \
     pycurl==7.44.1 
 
 
-RUN yum install -y https://research.cs.wisc.edu/htcondor/repo/8.9/htcondor-release-current.el8.noarch.rpm
-
-RUN sed -i 's/current/8.9/g' /etc/yum.repos.d/htcondor.repo
-
-RUN yum install -y condor
-
 ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /bin/tini
 RUN chmod +x /bin/tini
@@ -91,7 +85,7 @@ RUN python3.9 -m pip install .
 WORKDIR /usr/local/share/comp-dev-cms-ita
 
 # Install DASK remote jobqueue
-RUN git clone --branch v2.0.3 https://github.com/comp-dev-cms-ita/dask-remote-jobqueue
+RUN git clone --branch v2.0.4 https://github.com/comp-dev-cms-ita/dask-remote-jobqueue
 RUN cd /usr/local/share/comp-dev-cms-ita/dask-remote-jobqueue \
     && python3.9 -m pip install -U .
 
@@ -139,5 +133,11 @@ RUN jupyter lab build
 
 RUN mkdir -p ~/.jupyter/lab/settings && \
     echo '{"@jupyterlab/apputils-extension:themes": {"theme":"Tailwind Light"}}'> ~/.jupyter/lab/settings/overrides.json
+
+RUN yum install -y https://research.cs.wisc.edu/htcondor/repo/8.9/htcondor-release-current.el8.noarch.rpm
+
+RUN sed -i 's/current/8.9/g' /etc/yum.repos.d/htcondor.repo
+
+RUN yum install -y condor
 
 WORKDIR /opt/workspace

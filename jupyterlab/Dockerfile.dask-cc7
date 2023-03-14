@@ -105,7 +105,7 @@ RUN python3 -m pip install .
 WORKDIR /usr/local/share/comp-dev-cms-ita
 
 # Install DASK remote jobqueue
-RUN git clone --branch v2.0.3  https://github.com/comp-dev-cms-ita/dask-remote-jobqueue
+RUN git clone --branch v2.0.4  https://github.com/comp-dev-cms-ita/dask-remote-jobqueue
 # WORKDIR /usr/local/share/comp-dev-cms-ita/dask-remote-jobqueue
 # RUN python3 setup.py install
 # WORKDIR /usr/local/share/comp-dev-cms-ita
