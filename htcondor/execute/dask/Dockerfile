@@ -6,4 +6,4 @@ RUN chmod +x /bin/tini
 
 RUN yum -y update \
     && yum -y install \
-    singularity 
+    apptainer
