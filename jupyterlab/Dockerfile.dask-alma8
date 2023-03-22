@@ -45,7 +45,7 @@ RUN python3.9 -m pip install \
     dask[complete]==2021.11.1 \
     bokeh \
     click==7.1.2 \
-    dask-jobqueue==0.8.1 \
+    dask-jobqueue==0.7.4 \
     ipython \
     ipywidgets==7.6.5 \
     jupyter-server-proxy \
