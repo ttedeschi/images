@@ -1,0 +1,171 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+import requests
+import json
+import os
+from kubernetes import client, config
+
+page_length = 100
+
+try:
+    IAM_SERVER = os.environ["IAM_SERVER"]
+    ACCESS_TOKEN = os.environ["ACCESS_TOKEN"]
+    AUTHORIZED_GROUPS = os.environ["AUTHORIZED_GROUPS"].split(" ")
+    USERNAME_CLAIM = os.environ.get("USERNAME_CLAIM", "displayName")
+    MAPFILE_NAME = os.environ.get("MAPFILE_NAME", None)
+    MAPFILE_NAMESPACE = os.environ.get("MAPFILE_NAMESPACE", None)
+except Exception as ex:
+    print(ex)
+    exit(1)
+
+def build_map_htcondor(tids, usernames, userclaims, raws_id):
+    jhub_usermap = {}
+    mapfile_entries = []
+    for tid, username, userclaim in zip(tids, usernames, userclaims):
+        print("SCITOKENS https:\\/\\/"+IAM_SERVER+"\\/,%s %s" % (tid, username))
+        mapfile_entries.append("SCITOKENS https:\\/\\/"+IAM_SERVER+"\\/,%s %s" % (tid, username))
+        jhub_usermap.update({userclaim: username})
+    for tid, username, userclaim in zip(tids, raws_id, userclaims):
+        print("SCITOKENS https:\\/\\/"+IAM_SERVER+"\\/,%s %s" % (tid, username))
+        mapfile_entries.append("SCITOKENS https:\\/\\/"+IAM_SERVER+"\\/,%s %s" % (tid, username))
+        jhub_usermap.update({userclaim: username})
+
+
+    # ENABLE CMS-CAT SERVICE ACCOUNT
+
+    print("SCITOKENS https:\\/\\/"+IAM_SERVER+"\\/,%s %s" % ("de400c50-3984-499e-bf16-6223952f73ed", "cmscat"))
+    mapfile_entries.append("SCITOKENS https:\\/\\/"+IAM_SERVER+"\\/,%s %s" % (tid, username))
+
+    return mapfile_entries, jhub_usermap
+
+def merge_map_htcondor(mapfile_entries, jhub_usermap):
+
+    #config.load_kube_config()
+    config.load_incluster_config() 
+
+    mapfile_entries.append("PASSWORD (*.) condor\nGSI (.*) anonymous")
+
+    print(mapfile_entries)
+    print("\n".join(mapfile_entries))
+    cfg = client.V1ConfigMap(
+        metadata = {
+            "name": MAPFILE_NAME
+        },
+        data={
+            "condormapfile": "\n".join(mapfile_entries),
+            "jhub_usermap.json": json.dumps(jhub_usermap)
+        }
+    )
+
+    print(cfg.to_str())
+    client.CoreV1Api().replace_namespaced_config_map(
+        name=MAPFILE_NAME,
+        namespace=MAPFILE_NAMESPACE,
+        body=cfg
+    )
+
+    return
+
+def build_map_opa(tids, usernames):
+    opa_usermap = {}
+
+    for tid, username in zip(tids, usernames):
+        opa_usermap.update({tid: username})
+    
+    return opa_usermap
+
+def get_users(n_iteration, headers):
+
+    params = { 'startIndex': n_iteration*page_length + 1 }
+    r = requests.get("https://"+IAM_SERVER+"/scim/Users", headers=headers, params=params)
+
+    tids = []
+    usernames = []
+    usernames_raw = []
+    userclaims = []
+    try:
+        users = json.loads(r.text)["Resources"]
+    except Exception as ex:
+        print(ex)
+        raise(ex)
+
+    for user in users:
+        groups = []
+        #username = user['displayName'] 
+        username = user[USERNAME_CLAIM]
+        username_raw = username
+        tid = user['id']
+        if 'groups' in user:
+            groups = [ x['display'] for x in user['groups']]
+        if 'urn:indigo-dc:scim:schemas:IndigoUser' in user:
+            if 'oidcIds' in user['urn:indigo-dc:scim:schemas:IndigoUser']:
+                for oidcIds in user['urn:indigo-dc:scim:schemas:IndigoUser']['oidcIds']:
+                    if "https://auth.cern.ch/auth/realms/cern" in oidcIds["issuer"]:
+                        username_raw = username
+                        username = oidcIds['subject']
+
+        for auth_grp in AUTHORIZED_GROUPS:                
+            #if 'cms/afprotoit/users' in groups or 'cms/aprotit' in groups:
+            if auth_grp in groups:
+                print(groups)
+                print(username)
+                tids.append(tid)
+                usernames_raw.append(username_raw)
+                usernames.append(username)
+                userclaims.append(user[USERNAME_CLAIM])
+                break
+    
+    return tids, usernames, userclaims, usernames_raw
+
+
+def main():
+
+    token = ACCESS_TOKEN
+
+    params = {}
+    headers = {'Authorization': 'Bearer %s' % token, 'Content-type': 'application/json' }
+    r = requests.get("https://"+IAM_SERVER+"/scim/Users", headers=headers, params=params)
+
+    #print(r.text)
+    try:
+        n_results = json.loads(r.text)['totalResults']
+    except Exception as ex:
+        print(ex)
+        raise(ex)
+
+    print(n_results)    
+    username = None 
+
+    n_iteration = 0
+    tasks = []
+
+    mapfile_entries = []
+    jhub_usermap = {}
+
+    opa_user_map = {}
+
+    while (n_iteration*page_length) < n_results:
+
+        tids, usernames, userclaims, raws_id = get_users(n_iteration, headers)
+        if len(tids) == 0:
+            n_iteration += 1
+            continue
+
+        if MAPFILE_NAME:
+            print(tids, usernames, userclaims, raws_id)
+            mapfile_entries_tmp, jhub_usermap_tmp = build_map_htcondor(tids, usernames, userclaims, raws_id)
+
+            mapfile_entries += mapfile_entries_tmp
+            jhub_usermap.update(jhub_usermap_tmp)
+        else:
+            opa_user_map.update(build_map_opa(tids, usernames))
+
+        n_iteration += 1
+
+    if MAPFILE_NAME:
+        merge_map_htcondor(mapfile_entries, jhub_usermap)
+    else:
+        with open("/tmp/data.json", "w") as f:
+            json.dump(opa_user_map, f)
+
+main()
