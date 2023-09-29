@@ -30,12 +30,6 @@ def build_map_htcondor(tids, usernames, userclaims, raws_id):
         mapfile_entries.append("SCITOKENS https:\\/\\/"+IAM_SERVER+"\\/,%s %s" % (tid, username))
         jhub_usermap.update({userclaim: username})
 
-
-    # ENABLE CMS-CAT SERVICE ACCOUNT
-
-    print("SCITOKENS https:\\/\\/"+IAM_SERVER+"\\/,%s %s" % ("de400c50-3984-499e-bf16-6223952f73ed", "cmscat"))
-    mapfile_entries.append("SCITOKENS https:\\/\\/"+IAM_SERVER+"\\/,%s %s" % (tid, username))
-
     return mapfile_entries, jhub_usermap
 
 def merge_map_htcondor(mapfile_entries, jhub_usermap):
@@ -140,6 +134,12 @@ def main():
     tasks = []
 
     mapfile_entries = []
+
+    # ENABLE CMS-CAT SERVICE ACCOUNT
+
+    print("SCITOKENS https:\\/\\/"+IAM_SERVER+"\\/,%s %s" % ("de400c50-3984-499e-bf16-6223952f73ed", "cmscat"))
+    mapfile_entries.append("SCITOKENS https:\\/\\/"+IAM_SERVER+"\\/,%s %s" % ("de400c50-3984-499e-bf16-6223952f73ed", "cmscat"))
+
     jhub_usermap = {}
 
     opa_user_map = {}
