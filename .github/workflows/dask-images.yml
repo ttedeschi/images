@@ -228,7 +228,7 @@ jobs:
           context: ./scimsync/
           outputs: "type=registry,push=true"
           tags: |
-            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/jupyterlab:${{ env.RELEASE_VERSION }}-dask-alma8
+            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/scimsync:${{ env.RELEASE_VERSION }}
           file: ./scimsync/Dockerfile
           platforms: linux/amd64
           build-args: "NOTEBOOK_VERSION=${{ env.RELEASE_VERSION }}"
