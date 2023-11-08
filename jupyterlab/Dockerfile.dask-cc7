@@ -88,15 +88,17 @@ RUN yum install -y nodejs npm && npm install -g typescript yarn
 #    && jupyter lab clean -y 
 
 # Install DASK labextension
+RUN python3 -m pip uninstall urllib3
+RUN python3 -m pip install 'urllib3<2.0'
 WORKDIR /usr/local/share/comp-dev-cms-ita
 RUN git clone --branch v2.0.1-update https://github.com/ttedeschi/dask-labextension.git
 #RUN git clone https://github.com/comp-dev-cms-ita/dask-labextension.git
 COPY labextension.yaml /usr/local/share/comp-dev-cms-ita/dask-labextension/dask_labextension/
 
 WORKDIR /usr/local/share/comp-dev-cms-ita/dask-labextension
-RUN jlpm \
-    && jlpm build \
-    && npm cache clean --force
+RUN jlpm 
+RUN jlpm build 
+RUN npm cache clean --force
 RUN python3 -m pip install .
 
 # Build jupyter lab stuff in release mode
