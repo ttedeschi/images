@@ -67,7 +67,7 @@ RUN chmod +x /bin/tini
 
 # Install DASK labextension
 WORKDIR /usr/local/share/comp-dev-cms-ita
-RUN git clone --branch v2.0.2 https://github.com/comp-dev-cms-ita/dask-labextension.git
+RUN git clone --branch v2.0.2-update https://github.com/ttedeschi/dask-labextension.git
 #RUN git clone https://github.com/comp-dev-cms-ita/dask-labextension.git
 COPY labextension.yaml /usr/local/share/comp-dev-cms-ita/dask-labextension/dask_labextension/
 
