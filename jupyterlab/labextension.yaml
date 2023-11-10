@@ -5,36 +5,12 @@ labextension:
       class: "RemoteHTCondor"
       args: []
       kwargs: {}
-    - name: "HTCondor-T2_LNL_PD"
-      module: "dask_remote_jobqueue"
-      class: "RemoteHTCondor"
-      args: []
-      kwargs:
-        sitename: T2_LNL_PD
-    - name: "HTCondor-T2_LNL_PD_CloudVeneto"
-      module: "dask_remote_jobqueue"
-      class: "RemoteHTCondor"
-      args: []
-      kwargs:
-        sitename: T2_LNL_PD_CloudVeneto
-    - name: "HTCondor-PG"
-      module: "dask_remote_jobqueue"
-      class: "RemoteHTCondor"
-      args: []
-      kwargs:
-        sitename: Perugia
-    - name: "HTCondor-CNAF-DODAS"
-      module: "dask_remote_jobqueue"
-      class: "RemoteHTCondor"
-      args: []
-      kwargs:
-        sitename: cnaf-dodas
-    - name: "HTCondor-CNAF-k8s"
-      module: "dask_remote_jobqueue"
-      class: "RemoteHTCondor"
-      args: []
-      kwargs:
-        sitename: cnaf-k8s
+    #- name: "HTCondor-PG"
+    #  module: "dask_remote_jobqueue"
+    #  class: "RemoteHTCondor"
+    #  args: []
+    #  kwargs:
+    #    sitename: Perugia
     - name: "Local"
       module: "dask.distributed"
       class: "LocalCluster"
