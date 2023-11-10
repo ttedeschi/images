@@ -1,16 +1,5 @@
 labextension:
   factories:
-    - name: "HTCondor (random site)"
-      module: "dask_remote_jobqueue"
-      class: "RemoteHTCondor"
-      args: []
-      kwargs: {}
-    #- name: "HTCondor-PG"
-    #  module: "dask_remote_jobqueue"
-    #  class: "RemoteHTCondor"
-    #  args: []
-    #  kwargs:
-    #    sitename: Perugia
     - name: "Local"
       module: "dask.distributed"
       class: "LocalCluster"
